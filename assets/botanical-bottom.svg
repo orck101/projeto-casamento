@@ -1,0 +1,16 @@
+<svg width="620" height="520" viewBox="0 0 620 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g opacity=".92" transform="translate(620 520) rotate(180)">
+    <path d="M-20 30C110 62 195 145 255 259" stroke="#B79A55" stroke-width="3"/>
+    <path d="M35 0C90 93 100 180 83 293" stroke="#5E7180" stroke-width="3"/>
+    <path d="M42 68C92 25 143 34 168 56C130 97 81 104 42 68Z" fill="#718592" fill-opacity=".78"/>
+    <path d="M88 125C132 80 184 84 211 106C177 151 126 164 88 125Z" fill="#718592" fill-opacity=".67"/>
+    <path d="M118 191C163 147 211 153 239 176C204 218 157 228 118 191Z" fill="#8799A3" fill-opacity=".72"/>
+    <path d="M58 197C16 158 9 108 29 81C72 113 89 161 58 197Z" fill="#667B88" fill-opacity=".7"/>
+    <path d="M17 286C-24 245 -26 196 -4 170C37 204 50 252 17 286Z" fill="#7D909B" fill-opacity=".66"/>
+    <path d="M184 256C227 213 278 219 303 244C267 286 220 293 184 256Z" fill="#6E8290" fill-opacity=".68"/>
+    <circle cx="207" cy="117" r="9" fill="#B79A55"/>
+    <circle cx="231" cy="141" r="7" fill="#B79A55"/>
+    <circle cx="255" cy="163" r="8" fill="#B79A55"/>
+    <path d="M148 35C196 78 234 135 270 206" stroke="#B79A55" stroke-width="2.5"/>
+  </g>
+</svg>
