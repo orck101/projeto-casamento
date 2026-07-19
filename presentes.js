@@ -141,6 +141,23 @@ function createGiftCard(gift) {
   return card;
 }
 
+function observeReveals() {
+  const items = document.querySelectorAll(".reveal:not(.visible)");
+  if (!("IntersectionObserver" in window)) {
+    items.forEach((item) => item.classList.add("visible"));
+    return;
+  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: .12 });
+  items.forEach((item) => observer.observe(item));
+}
+
 function renderGifts(category = "all") {
   grid.innerHTML = "";
   if (!gifts.length) {
@@ -411,6 +428,7 @@ async function init() {
   await fetchGifts();
   renderGifts();
   await renderMessages();
+  observeReveals();
 }
 
 init();
