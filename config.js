@@ -1,4 +1,4 @@
-/ CONFIGURAÇÃO DO SUPABASE
+// CONFIGURAÇÃO DO SUPABASE
 // Pegue esses dois valores em: Project Settings > API, dentro do painel do Supabase.
 // SUPABASE_URL fica em "Project URL", SUPABASE_ANON_KEY fica em "anon public" (a chave pública, não a secreta!).
  
