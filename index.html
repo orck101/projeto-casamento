@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b2545">
+  <meta name="description" content="Uma vitrine divertida para presentear o futuro de Victor e Luana.">
+  <title>O Futuro de Victor & Luana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#presentes">Ir direto para os presentes</a>
+
+  <header class="site-header" id="inicio">
+    <div class="header-inner shell">
+      <a class="brand" href="#inicio" aria-label="Voltar ao início">
+        <span class="brand-mark" aria-hidden="true">
+          <span class="brand-orbit"></span>
+          <span class="brand-dot"></span>
+        </span>
+        <span>Victor <b>&</b> Luana</span>
+      </a>
+      <nav aria-label="Navegação principal">
+        <a href="#presentes">Presentes</a>
+        <a href="#mural">Recados</a>
+        <button class="header-cta" type="button" data-scroll-gifts>Explorar a vitrine</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span aria-hidden="true">✦</span> Projeto de futuro oficialmente lançado</div>
+        <h1 id="hero-title">O Futuro de <span>Victor & Luana</span></h1>
+        <p class="hero-lead">Em vez de mais uma torradeira, ajude a financiar capítulos da nossa vida: uma casa mais esperta, uma lua de mel memorável e uma festa digna de lançamento espacial.</p>
+
+        <div class="hero-actions">
+          <button class="button button-primary" type="button" data-scroll-gifts>
+            Escolher um presente
+            <span aria-hidden="true">→</span>
+          </button>
+          <a class="button button-ghost" href="#mural">Ler os recados</a>
+        </div>
+
+        <div class="countdown-wrap" aria-live="polite">
+          <div class="countdown-heading">
+            <span>Contagem regressiva</span>
+            <strong id="wedding-date-label">10.10.2026</strong>
+          </div>
+          <div class="countdown" id="countdown">
+            <div><strong id="days">000</strong><span>dias</span></div>
+            <div><strong id="hours">00</strong><span>horas</span></div>
+            <div><strong id="minutes">00</strong><span>min</span></div>
+            <div><strong id="seconds">00</strong><span>seg</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Fotos de Victor e Luana durante o ensaio de gestação">
+        <div class="retro-sun" aria-hidden="true"></div>
+        <figure class="hero-photo main-photo">
+          <img src="assets/hero-victor-luana.jpg" alt="Victor beijando a testa de Luana durante o ensaio de gestação">
+          <figcaption>Tripulação oficial do futuro</figcaption>
+        </figure>
+        <figure class="hero-photo mini-photo mini-one" aria-hidden="true">
+          <img src="assets/casal-sentados-camera.jpg" alt="">
+        </figure>
+        <figure class="hero-photo mini-photo mini-two" aria-hidden="true">
+          <img src="assets/casal-dancando.jpg" alt="">
+        </figure>
+        <div class="orbit orbit-one" aria-hidden="true"></div>
+        <div class="orbit orbit-two" aria-hidden="true"></div>
+        <div class="spark spark-one" aria-hidden="true">✦</div>
+        <div class="spark spark-two" aria-hidden="true">✦</div>
+      </div>
+    </section>
+
+    <section class="mission-strip" aria-label="Resumo do projeto">
+      <div class="shell mission-strip-inner">
+        <span><b>01</b> Escolha uma missão</span>
+        <span><b>02</b> Defina sua contribuição</span>
+        <span><b>03</b> Deixe um recado para a tripulação</span>
+      </div>
+    </section>
+
+    <section class="catalog shell" id="presentes" aria-labelledby="catalog-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow"><span aria-hidden="true">✦</span> Central de presentes</p>
+          <h2 id="catalog-title">Escolha qual parte do futuro você quer impulsionar</h2>
+        </div>
+        <p>Todos os valores abaixo são demonstrativos nesta versão. Ao clicar em um item, você verá a experiência completa do presente.</p>
+      </div>
+
+      <div class="category-tabs" role="tablist" aria-label="Categorias de presentes">
+        <button class="category-tab is-active" type="button" role="tab" aria-selected="true" data-category="all">
+          <span class="tab-pip pip-all"></span> Todas as missões
+        </button>
+        <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="casa">
+          <span class="tab-pip pip-casa"></span> Casa do Futuro
+        </button>
+        <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="lua-de-mel">
+          <span class="tab-pip pip-lua"></span> Missão Lua de Mel
+        </button>
+        <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="financeiro">
+          <span class="tab-pip pip-financeiro"></span> Portal Financeiro
+        </button>
+      </div>
+
+      <div class="gift-grid" id="gift-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="photo-break" aria-label="Foto do casal">
+      <div class="shell photo-break-grid">
+        <div class="photo-break-copy">
+          <p class="eyebrow"><span aria-hidden="true">✦</span> Mensagem da tripulação</p>
+          <blockquote>“A melhor parte do futuro é saber que ele começa cercado por pessoas que amamos.”</blockquote>
+          <p>Cada presente vira uma lembrança concreta — e cada recado fica guardado no nosso mural.</p>
+        </div>
+        <div class="photo-break-frame">
+          <img src="assets/casal-em-pe.jpg" alt="Victor e Luana em pé durante o ensaio de gestação">
+          <span aria-hidden="true">V + L</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="wall shell" id="mural" aria-labelledby="wall-title">
+      <div class="section-heading wall-heading">
+        <div>
+          <p class="eyebrow"><span aria-hidden="true">✦</span> Transmissões recebidas</p>
+          <h2 id="wall-title">Mural de recados</h2>
+        </div>
+        <button class="button button-secondary" type="button" id="open-message-modal">Deixar um recado</button>
+      </div>
+      <div class="message-grid" id="message-grid"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <div>
+        <a class="brand footer-brand" href="#inicio">
+          <span class="brand-mark" aria-hidden="true"><span class="brand-orbit"></span><span class="brand-dot"></span></span>
+          <span>Victor <b>&</b> Luana</span>
+        </a>
+        <p>Feito com amor, humor e planos para muitos anos-luz.</p>
+      </div>
+      <div class="footer-meta">
+        <span>Casamento · 10 de outubro de 2026</span>
+        <a href="#inicio">Voltar ao topo ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="modal" id="gift-modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" type="button" aria-label="Fechar" data-close-modal>×</button>
+      <div class="modal-item-heading">
+        <div class="mini-orbit" id="modal-icon" aria-hidden="true"></div>
+        <div>
+          <span class="modal-category" id="modal-category"></span>
+          <h2 id="modal-title">Presentear</h2>
+          <p id="modal-description"></p>
+        </div>
+      </div>
+
+      <form id="gift-form">
+        <input type="hidden" id="gift-id" name="giftId">
+        <label>
+          Seu nome
+          <input id="guest-name" name="guestName" type="text" autocomplete="name" placeholder="Como devemos agradecer?" required>
+        </label>
+        <label>
+          Valor que deseja presentear
+          <div class="money-field">
+            <span>R$</span>
+            <input id="gift-value" name="giftValue" type="number" min="10" step="10" inputmode="decimal" placeholder="150" required>
+          </div>
+        </label>
+        <label>
+          Recado para Victor e Luana <small>(opcional)</small>
+          <textarea id="gift-message" name="giftMessage" rows="4" placeholder="Escreva algo que eles vão querer reler daqui a muitos anos..."></textarea>
+        </label>
+        <div class="form-note">
+          <span aria-hidden="true">i</span>
+          Esta é uma demonstração visual. Nenhum pagamento real será processado.
+        </div>
+        <button class="button button-primary button-full" type="submit">Confirmar presente</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal" id="message-modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-message-modal></div>
+    <section class="modal-panel compact" role="dialog" aria-modal="true" aria-labelledby="message-modal-title">
+      <button class="modal-close" type="button" aria-label="Fechar" data-close-message-modal>×</button>
+      <p class="eyebrow"><span aria-hidden="true">✦</span> Nova transmissão</p>
+      <h2 id="message-modal-title">Deixe seu recado</h2>
+      <form id="message-form">
+        <label>
+          Seu nome
+          <input id="message-name" type="text" autocomplete="name" placeholder="Seu nome" required>
+        </label>
+        <label>
+          Sua mensagem
+          <textarea id="message-text" rows="5" maxlength="240" placeholder="Escreva uma mensagem para o casal..." required></textarea>
+        </label>
+        <button class="button button-secondary button-full" type="submit">Enviar para o mural</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
