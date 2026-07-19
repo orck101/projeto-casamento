@@ -1,137 +1,21 @@
 // CONFIGURAÇÃO RÁPIDA: substitua a data abaixo pela data real do casamento.
 const WEDDING_DATE = "2026-10-10T12:00:00-03:00";
 
-const gifts = [
-  {
-    id: "pia-autonoma",
-    category: "casa",
-    categoryLabel: "Casa do Futuro",
-    name: "Pia Autônoma 3000",
-    description: "Para que a louça desapareça antes de começar a reunião sobre quem vai lavar.",
-    current: 820,
-    total: 1800,
-    icon: "◌"
-  },
-  {
-    id: "aspirobot",
-    category: "casa",
-    categoryLabel: "Casa do Futuro",
-    name: "Aspirobô Organizador Supremo",
-    description: "Um pequeno aliado contra poeira, migalhas e decisões domésticas questionáveis.",
-    current: 1350,
-    total: 2100,
-    icon: "✦"
-  },
-  {
-    id: "cafeteira",
-    category: "casa",
-    categoryLabel: "Casa do Futuro",
-    name: "Cafeteira Teletransportadora",
-    description: "Café pronto antes que qualquer um dos dois tente conversar pela manhã.",
-    current: 980,
-    total: 980,
-    icon: "☕"
-  },
-  {
-    id: "colchao-ia",
-    category: "casa",
-    categoryLabel: "Casa do Futuro",
-    name: "Colchão com IA Anti-Briga",
-    description: "Tecnologia de ponta para dividir o espaço e a razão em partes quase iguais.",
-    current: 2100,
-    total: 5200,
-    icon: "≈"
-  },
-  {
-    id: "geladeira-oraculo",
-    category: "casa",
-    categoryLabel: "Casa do Futuro",
-    name: "Geladeira Oráculo",
-    description: "Ela prevê a fome, mas ainda não explica quem terminou o último pedaço.",
-    current: 3700,
-    total: 6500,
-    icon: "▣"
-  },
-  {
-    id: "varal",
-    category: "casa",
-    categoryLabel: "Casa do Futuro",
-    name: "Varal Autodobrável",
-    description: "Porque o futuro precisa ter menos roupas na cadeira e mais paz na sala.",
-    current: 460,
-    total: 1200,
-    icon: "⌁"
-  },
-  {
-    id: "passagem",
-    category: "lua-de-mel",
-    categoryLabel: "Missão Lua de Mel",
-    name: "Combustível pra Nave",
-    description: "Ajude a colocar os dois em órbita — de preferência com bagagem despachada.",
-    current: 4200,
-    total: 7600,
-    icon: "↗"
-  },
-  {
-    id: "hospedagem",
-    category: "lua-de-mel",
-    categoryLabel: "Missão Lua de Mel",
-    name: "Base de Pouso",
-    description: "Uma estação confortável para recarregar as energias depois de explorar o planeta.",
-    current: 5200,
-    total: 5200,
-    icon: "⌂"
-  },
-  {
-    id: "jantar",
-    category: "lua-de-mel",
-    categoryLabel: "Missão Lua de Mel",
-    name: "Ração Espacial de Luxo",
-    description: "Um jantar especial, sem sachê liofilizado e com sobremesa obrigatória.",
-    current: 350,
-    total: 900,
-    icon: "✧"
-  },
-  {
-    id: "passeio",
-    category: "lua-de-mel",
-    categoryLabel: "Missão Lua de Mel",
-    name: "Expedição Fora da Órbita",
-    description: "Um passeio para voltar com histórias melhores do que as fotos do aeroporto.",
-    current: 1260,
-    total: 2400,
-    icon: "◎"
-  },
-  {
-    id: "buffet",
-    category: "financeiro",
-    categoryLabel: "Portal Financeiro",
-    name: "Combustível pra Festa",
-    description: "Energia gastronômica para manter convidados felizes e a pista funcionando.",
-    current: 6800,
-    total: 12000,
-    icon: "✺"
-  },
-  {
-    id: "efeitos",
-    category: "financeiro",
-    categoryLabel: "Portal Financeiro",
-    name: "Efeitos Especiais da Cerimônia",
-    description: "Luz, som e decoração para o grande lançamento não parecer reunião de condomínio.",
-    current: 4800,
-    total: 8000,
-    icon: "✦"
-  }
-];
+// Cliente Supabase (usa as chaves definidas em config.js)
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const defaultMessages = [
-  { name: "Carla & André", message: "Que a casa de vocês seja sempre cheia de risadas, café e planos malucos que dão certo." },
-  { name: "Fernanda", message: "Desejo uma vida inteira de parceria, leveza e muitas viagens para contar depois." },
-  { name: "Marcos", message: "Que essa nova missão tenha amor de sobra, paciência infinita e Wi-Fi funcionando." },
-  { name: "Bia & Rafael", message: "O futuro de vocês já começou lindo. Estamos muito felizes por fazer parte desse momento." },
-  { name: "Tia Sônia", message: "Que nunca falte diálogo, carinho e um bom almoço de domingo para reunir todo mundo." },
-  { name: "Lucas", message: "Vida longa à melhor dupla da galáxia. Contem comigo em todas as órbitas." }
-];
+// Ícones por categoria, usados apenas se o presente não tiver imagem própria
+const CATEGORY_ICONS = {
+  "casa": "◌",
+  "lua-de-mel": "↗",
+  "financeiro": "✺"
+};
+
+const CATEGORY_LABELS = {
+  "casa": "Casa do Futuro",
+  "lua-de-mel": "Missão Lua de Mel",
+  "financeiro": "Portal Financeiro"
+};
 
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const giftGrid = document.querySelector("#gift-grid");
@@ -143,29 +27,7 @@ const messageForm = document.querySelector("#message-form");
 const toast = document.querySelector("#toast");
 let activeCategory = "all";
 let lastFocusedElement = null;
-
-function loadStoredContributions() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("victor-luana-contributions") || "{}");
-    gifts.forEach(gift => {
-      if (Number.isFinite(saved[gift.id])) gift.current = Math.min(saved[gift.id], gift.total);
-    });
-  } catch (_) {}
-}
-
-function saveStoredContributions() {
-  const saved = Object.fromEntries(gifts.map(gift => [gift.id, gift.current]));
-  localStorage.setItem("victor-luana-contributions", JSON.stringify(saved));
-}
-
-function loadMessages() {
-  try {
-    const stored = JSON.parse(localStorage.getItem("victor-luana-messages") || "[]");
-    return [...stored, ...defaultMessages];
-  } catch (_) {
-    return defaultMessages;
-  }
-}
+let gifts = [];
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>'"]/g, char => ({
@@ -173,33 +35,62 @@ function escapeHtml(value) {
   }[char]));
 }
 
+// ------------------------------
+// Busca dos presentes no Supabase
+// ------------------------------
+async function fetchGifts() {
+  const { data, error } = await db
+    .from("presentes")
+    .select("*")
+    .eq("status", "ativo")
+    .order("ordem", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao buscar presentes:", error);
+    giftGrid.innerHTML = `<p style="padding:2rem;">Não foi possível carregar os presentes agora. Tenta recarregar a página.</p>`;
+    return;
+  }
+
+  gifts = data;
+  renderGifts();
+}
+
 function renderGifts() {
-  const filtered = activeCategory === "all" ? gifts : gifts.filter(gift => gift.category === activeCategory);
+  const filtered = activeCategory === "all" ? gifts : gifts.filter(gift => gift.categoria === activeCategory);
+
+  if (filtered.length === 0) {
+    giftGrid.innerHTML = `<p style="padding:2rem;">Nenhum presente cadastrado nessa categoria ainda.</p>`;
+    return;
+  }
+
   giftGrid.innerHTML = filtered.map(gift => {
-    const progress = Math.min(100, Math.round((gift.current / gift.total) * 100));
+    const progress = Math.min(100, Math.round((gift.valor_arrecadado / gift.valor_total) * 100));
     const complete = progress >= 100;
+    const icon = CATEGORY_ICONS[gift.categoria] || "✦";
+    const categoryLabel = CATEGORY_LABELS[gift.categoria] || gift.categoria;
+
     return `
-      <article class="gift-card ${complete ? "is-complete" : ""}" data-category="${gift.category}">
+      <article class="gift-card ${complete ? "is-complete" : ""}" data-category="${gift.categoria}">
         <div class="gift-card-top">
-          <span class="gift-category">${gift.categoryLabel}</span>
+          <span class="gift-category">${categoryLabel}</span>
           ${complete ? '<span class="complete-seal">✓ Completo</span>' : ""}
         </div>
         <div class="gift-main">
           <div class="progress-orbit" style="--progress:${progress}" aria-label="${progress}% arrecadado">
-            <span class="progress-icon" aria-hidden="true">${gift.icon}</span>
+            <span class="progress-icon" aria-hidden="true">${icon}</span>
             <span class="progress-number">${progress}%</span>
           </div>
           <div>
-            <h3>${gift.name}</h3>
-            <p class="gift-card-description">${gift.description}</p>
+            <h3>${escapeHtml(gift.nome)}</h3>
+            <p class="gift-card-description">${escapeHtml(gift.descricao || "")}</p>
           </div>
         </div>
         <div class="gift-footer">
           <div class="gift-values">
             <span>Já presenteado</span>
-            <strong>${money.format(gift.current)} de ${money.format(gift.total)}</strong>
+            <strong>${money.format(gift.valor_arrecadado)} de ${money.format(gift.valor_total)}</strong>
           </div>
-          <button class="gift-button" type="button" data-gift-id="${gift.id}" aria-label="Presentear ${gift.name}">→</button>
+          ${!complete ? `<button class="gift-button" type="button" data-gift-id="${gift.id}" aria-label="Presentear ${escapeHtml(gift.nome)}">→</button>` : ""}
         </div>
       </article>`;
   }).join("");
@@ -209,28 +100,46 @@ function renderGifts() {
   });
 }
 
-function renderMessages() {
-  const messages = loadMessages();
-  messageGrid.innerHTML = messages.map(item => `
+// ------------------------------
+// Busca dos recados confirmados no Supabase
+// ------------------------------
+async function fetchMessages() {
+  const { data, error } = await db
+    .from("contribuicoes")
+    .select("nome_convidado, recado")
+    .eq("status", "confirmado")
+    .not("recado", "is", null)
+    .order("confirmado_em", { ascending: false })
+    .limit(12);
+
+  if (error) {
+    console.error("Erro ao buscar recados:", error);
+    return;
+  }
+
+  messageGrid.innerHTML = data.map(item => `
     <article class="message-card">
-      <p>${escapeHtml(item.message)}</p>
+      <p>${escapeHtml(item.recado)}</p>
       <footer>
-        <span class="message-avatar" aria-hidden="true">${escapeHtml(item.name.trim().charAt(0).toUpperCase() || "V")}</span>
-        <strong>${escapeHtml(item.name)}</strong>
+        <span class="message-avatar" aria-hidden="true">${escapeHtml((item.nome_convidado || "V").trim().charAt(0).toUpperCase())}</span>
+        <strong>${escapeHtml(item.nome_convidado)}</strong>
       </footer>
     </article>`).join("");
 }
 
+// ------------------------------
+// Modal de presente
+// ------------------------------
 function openGiftModal(id) {
-  const gift = gifts.find(item => item.id === id);
+  const gift = gifts.find(item => String(item.id) === String(id));
   if (!gift) return;
   lastFocusedElement = document.activeElement;
   document.querySelector("#gift-id").value = gift.id;
-  document.querySelector("#modal-title").textContent = gift.name;
-  document.querySelector("#modal-description").textContent = gift.description;
-  document.querySelector("#modal-category").textContent = gift.categoryLabel;
-  document.querySelector("#modal-icon").textContent = gift.icon;
-  document.querySelector("#gift-value").max = Math.max(10, gift.total - gift.current);
+  document.querySelector("#modal-title").textContent = gift.nome;
+  document.querySelector("#modal-description").textContent = gift.descricao || "";
+  document.querySelector("#modal-category").textContent = CATEGORY_LABELS[gift.categoria] || gift.categoria;
+  document.querySelector("#modal-icon").textContent = CATEGORY_ICONS[gift.categoria] || "✦";
+  document.querySelector("#gift-value").max = Math.max(10, gift.valor_total - gift.valor_arrecadado);
   giftModal.classList.add("is-open");
   giftModal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
@@ -264,9 +173,11 @@ function updateCountdown() {
   document.querySelector("#seconds").textContent = String(seconds).padStart(2, "0");
 }
 
-loadStoredContributions();
-renderGifts();
-renderMessages();
+// ------------------------------
+// Inicialização
+// ------------------------------
+fetchGifts();
+fetchMessages();
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
@@ -300,43 +211,52 @@ document.querySelector("#open-message-modal").addEventListener("click", event =>
   window.setTimeout(() => document.querySelector("#message-name").focus(), 50);
 });
 
-giftForm.addEventListener("submit", event => {
+// ------------------------------
+// Envio do formulário de presente -> grava em "contribuicoes" como pendente
+// ------------------------------
+giftForm.addEventListener("submit", async event => {
   event.preventDefault();
+  const submitButton = giftForm.querySelector("button[type=submit]");
   const id = document.querySelector("#gift-id").value;
-  const gift = gifts.find(item => item.id === id);
   const guestName = document.querySelector("#guest-name").value.trim();
   const value = Number(document.querySelector("#gift-value").value);
   const message = document.querySelector("#gift-message").value.trim();
-  if (!gift || !guestName || !Number.isFinite(value) || value < 10) return;
+  if (!id || !guestName || !Number.isFinite(value) || value < 10) return;
 
-  gift.current = Math.min(gift.total, gift.current + value);
-  saveStoredContributions();
+  submitButton.disabled = true;
+  submitButton.textContent = "Enviando...";
 
-  if (message) {
-    const stored = JSON.parse(localStorage.getItem("victor-luana-messages") || "[]");
-    stored.unshift({ name: guestName, message });
-    localStorage.setItem("victor-luana-messages", JSON.stringify(stored.slice(0, 12)));
+  const { error } = await db.from("contribuicoes").insert({
+    presente_id: id,
+    nome_convidado: guestName,
+    valor: value,
+    recado: message || null,
+    status: "pendente"
+  });
+
+  submitButton.disabled = false;
+  submitButton.textContent = "Confirmar presente";
+
+  if (error) {
+    console.error("Erro ao registrar contribuição:", error);
+    showToast("Algo deu errado. Tenta de novo em instantes.");
+    return;
   }
 
-  renderGifts();
-  renderMessages();
   giftForm.reset();
   closeModal(giftModal);
-  showToast(`Presente registrado na demonstração. Obrigado, ${guestName}!`);
+  showToast(`Recebemos seu presente, ${guestName}! Assim que o PIX cair, ele aparece na vitrine.`);
 });
 
-messageForm.addEventListener("submit", event => {
+// ------------------------------
+// Envio de recado avulso (sem presente vinculado)
+// Por enquanto, recados só aparecem no mural quando vinculados a um presente
+// confirmado — ajuste esse fluxo se decidirem permitir recados soltos.
+// ------------------------------
+messageForm.addEventListener("submit", async event => {
   event.preventDefault();
-  const name = document.querySelector("#message-name").value.trim();
-  const message = document.querySelector("#message-text").value.trim();
-  if (!name || !message) return;
-  const stored = JSON.parse(localStorage.getItem("victor-luana-messages") || "[]");
-  stored.unshift({ name, message });
-  localStorage.setItem("victor-luana-messages", JSON.stringify(stored.slice(0, 12)));
-  renderMessages();
-  messageForm.reset();
+  showToast("Por enquanto, recados aparecem no mural junto de um presente confirmado.");
   closeModal(messageModal);
-  showToast("Recado adicionado ao mural desta demonstração.");
 });
 
 document.addEventListener("keydown", event => {
