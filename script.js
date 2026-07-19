@@ -1,5 +1,6 @@
 const WEDDING_DATE = new Date('2026-08-08T13:00:00-03:00');
 const WHATSAPP_NUMBER = '5512991360571';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
 const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
@@ -85,10 +86,11 @@ $('#phone').addEventListener('input', event => {
   event.target.value = formatted.replace(/-$/, '');
 });
 
-$('#rsvp-form').addEventListener('submit', event => {
+$('#rsvp-form').addEventListener('submit', async event => {
   event.preventDefault();
   if (!event.currentTarget.reportValidity()) return;
 
+  const submitButton = event.currentTarget.querySelector('button[type="submit"]');
   const data = Object.fromEntries(new FormData(event.currentTarget).entries());
   const attending = data.attendance === 'Sim';
   const lines = [
@@ -104,23 +106,35 @@ $('#rsvp-form').addEventListener('submit', event => {
     lines.push(`Adultos: ${data.adults || 1}`);
     lines.push(`Crianças: ${data.children || 0}`);
     lines.push(`Nomes dos convidados: ${data.guestNames || 'Não informado'}`);
-    lines.push(`Restrição alimentar: ${data.dietary || 'Nenhuma informada'}`);
   }
   if (data.message) lines.push(`Recado: ${data.message}`);
   lines.push('', 'Resposta enviada pelo site do casamento.');
 
-  const record = { ...data, createdAt: new Date().toISOString() };
-  try {
-    const saved = JSON.parse(localStorage.getItem('victorLuanaRsvps') || '[]');
-    saved.push(record);
-    localStorage.setItem('victorLuanaRsvps', JSON.stringify(saved));
-  } catch (_) {
-    // Local storage is only a convenience; WhatsApp remains the delivery method.
+  submitButton.disabled = true;
+  submitButton.textContent = 'Enviando...';
+
+  const { error } = await db.from('confirmacoes').insert({
+    nome_responsavel: data.responsibleName,
+    telefone: data.phone,
+    presenca: data.attendance,
+    adultos: attending ? Number(data.adults || 1) : 0,
+    criancas: attending ? Number(data.children || 0) : 0,
+    nomes_convidados: attending ? (data.guestNames || null) : null,
+    recado: data.message || null
+  });
+
+  submitButton.disabled = false;
+  submitButton.textContent = 'Enviar confirmação';
+
+  if (error) {
+    console.error('Erro ao registrar confirmação:', error);
+    showToast('Algo deu errado ao registrar. Tenta de novo em instantes.');
+    return;
   }
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
   window.open(url, '_blank', 'noopener,noreferrer');
-  showToast('Mensagem preparada. Envie pelo WhatsApp para concluir a confirmação.');
+  showToast('Confirmação registrada! Envie pelo WhatsApp para avisar os noivos também.');
   closeModal();
   event.currentTarget.reset();
   $('input[name="attendance"][value="Sim"]').checked = true;
