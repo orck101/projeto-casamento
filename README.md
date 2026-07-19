@@ -1,38 +1,56 @@
-# O Futuro de Victor & Luana
+# Convite digital — Victor & Luana
 
-Front-end estático e responsivo para uma vitrine de presentes de casamento com estética retrô-futurista.
+Primeiro módulo do site do casamento.
 
-## Como abrir
+## Conteúdo
 
-Abra o arquivo `index.html` no navegador. Para uma visualização mais fiel, também é possível iniciar um servidor local na pasta:
+- `index.html`: convite digital completo.
+- `styles.css`: identidade visual inspirada no convite impresso.
+- `script.js`: contagem regressiva, menu, animações e formulário RSVP.
+- `presentes.html`: página provisória para o próximo módulo.
+- `assets/`: fotografias otimizadas e elementos botânicos.
+
+## Confirmação de presença
+
+O formulário monta uma mensagem estruturada e abre o WhatsApp no número `(12) 99136-0571`. O convidado precisa tocar em **Enviar** para concluir. Uma cópia também é gravada no `localStorage` do próprio navegador apenas para teste; isso não funciona como banco de dados central.
+
+## Data configurada
+
+`08/08/2026 às 13h`, fuso horário de Brasília. A data está na constante `WEDDING_DATE`, no início de `script.js`.
+
+## Abrir localmente
+
+Abra `index.html` em um navegador. Para testar em servidor local:
 
 ```bash
 python -m http.server 8000
 ```
 
-Depois, acesse `http://localhost:8000`.
+Depois acesse `http://localhost:8000`.
 
-## Personalização rápida
+## Módulo da lista de presentes
 
-No início de `app.js`, altere:
+A página `presentes.html` agora contém o protótipo completo da lista futurística:
+
+- catálogo com 12 presentes e três categorias;
+- progresso circular em formato de órbita;
+- filtros por categoria;
+- formulário de contribuição com valores sugeridos e valor livre;
+- mural de recados;
+- atualização simulada do progresso por `localStorage`;
+- resumo e envio da intenção de presente pelo WhatsApp;
+- layout responsivo para celular e computador.
+
+### Pagamentos
+
+A página está em modo de demonstração e não realiza cobranças. Para exibir uma chave Pix no resumo, edite o início de `presentes.js`:
 
 ```js
-const WEDDING_DATE = "2026-10-10T12:00:00-03:00";
+const CONFIG = {
+  whatsapp: "5512991360571",
+  pixKey: "SUA_CHAVE_PIX",
+  pixHolder: "Victor & Luana"
+};
 ```
 
-Os presentes de demonstração ficam no array `gifts`, também em `app.js`.
-
-## O que já funciona
-
-- contagem regressiva;
-- filtros por categoria;
-- cards com anel orbital de progresso;
-- selo automático para itens completos;
-- modal de contribuição;
-- mural de recados;
-- persistência local no navegador via `localStorage`;
-- responsividade para celular, tablet e desktop.
-
-## Importante
-
-Esta versão não processa pagamentos. O formulário apenas simula a experiência e atualiza os valores localmente no navegador. Para produção, será necessário conectar o formulário a um backend e a um meio de pagamento.
+Para uso real, o registro do presente e a atualização dos valores devem ser conectados a um banco de dados e confirmados somente após a validação do pagamento.
