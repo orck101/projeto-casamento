@@ -247,3 +247,26 @@ textarea { resize: vertical; }
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Tela de sucesso do RSVP */
+.rsvp-success {
+  text-align: center;
+  padding: 1rem 0 0;
+}
+.rsvp-success h2 {
+  margin: .4rem 0 1rem;
+}
+.rsvp-success p#rsvp-success-detail {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+}
+.rsvp-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  align-items: stretch;
+}
+.rsvp-success-actions .button-secondary {
+  background: transparent;
+}
