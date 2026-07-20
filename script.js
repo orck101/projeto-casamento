@@ -93,22 +93,6 @@ $('#rsvp-form').addEventListener('submit', async event => {
   const submitButton = event.currentTarget.querySelector('button[type="submit"]');
   const data = Object.fromEntries(new FormData(event.currentTarget).entries());
   const attending = data.attendance === 'Sim';
-  const lines = [
-    'Olá, Victor e Luana! 💍',
-    '',
-    attending ? 'Quero confirmar nossa presença no almoço de casamento.' : 'Infelizmente, não poderei participar do almoço de casamento.',
-    '',
-    `Responsável pela resposta: ${data.responsibleName}`,
-    `Telefone: ${data.phone}`,
-  ];
-
-  if (attending) {
-    lines.push(`Adultos: ${data.adults || 1}`);
-    lines.push(`Crianças: ${data.children || 0}`);
-    lines.push(`Nomes dos convidados: ${data.guestNames || 'Não informado'}`);
-  }
-  if (data.message) lines.push(`Recado: ${data.message}`);
-  lines.push('', 'Resposta enviada pelo site do casamento.');
 
   submitButton.disabled = true;
   submitButton.textContent = 'Enviando...';
@@ -132,9 +116,12 @@ $('#rsvp-form').addEventListener('submit', async event => {
     return;
   }
 
-  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
-  window.open(url, '_blank', 'noopener,noreferrer');
-  showToast('Confirmação registrada! Envie pelo WhatsApp para avisar os noivos também.');
+  const firstName = (data.responsibleName || '').trim().split(' ')[0] || '';
+  const thankYouMessage = attending
+    ? `Presença confirmada! Obrigado, ${firstName} — mal podemos esperar para celebrar com vocês. 💛`
+    : `Recebemos sua resposta, ${firstName}. Sentiremos sua falta, mas agradecemos por nos avisar! 💛`;
+
+  showToast(thankYouMessage);
   closeModal();
   event.currentTarget.reset();
   $('input[name="attendance"][value="Sim"]').checked = true;
