@@ -34,6 +34,7 @@ function showPanel() {
   loginView.style.display = "none";
   panelView.style.display = "block";
   loadGifts();
+  loadConfirmations();
 }
 
 loginForm.addEventListener("submit", async (event) => {
@@ -178,5 +179,120 @@ function escapeHtml(value) {
     "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
   }[char]));
 }
+
+// ------------------------------
+// Confirmações de presença (RSVP)
+// ------------------------------
+const rsvpSummary = document.querySelector("#rsvp-summary");
+const rsvpList = document.querySelector("#rsvp-list");
+const exportNamesButton = document.querySelector("#export-names-button");
+let confirmacoesCache = [];
+
+async function loadConfirmations() {
+  rsvpList.innerHTML = '<p class="empty">Carregando...</p>';
+
+  const { data, error } = await db
+    .from("confirmacoes")
+    .select("*")
+    .order("criado_em", { ascending: false });
+
+  if (error) {
+    rsvpList.innerHTML = '<p class="empty">Não foi possível carregar as confirmações.</p>';
+    console.error(error);
+    return;
+  }
+
+  confirmacoesCache = data;
+  renderRsvpSummary(data);
+  renderRsvpList(data);
+}
+
+function renderRsvpSummary(rows) {
+  const confirmados = rows.filter((r) => r.presenca === "Sim");
+  const recusas = rows.filter((r) => r.presenca === "Não");
+  const totalAdultos = confirmados.reduce((sum, r) => sum + Number(r.adultos || 0), 0);
+  const totalCriancas = confirmados.reduce((sum, r) => sum + Number(r.criancas || 0), 0);
+
+  rsvpSummary.innerHTML = "";
+  const items = [
+    ["Respostas confirmadas", confirmados.length],
+    ["Adultos", totalAdultos],
+    ["Crianças", totalCriancas],
+    ["Total de pessoas", totalAdultos + totalCriancas],
+    ["Não vão comparecer", recusas.length]
+  ];
+  items.forEach(([label, value]) => {
+    const div = document.createElement("div");
+    div.innerHTML = `<strong>${value}</strong><span>${label}</span>`;
+    rsvpSummary.append(div);
+  });
+}
+
+function renderRsvpList(rows) {
+  rsvpList.innerHTML = "";
+
+  if (!rows.length) {
+    rsvpList.innerHTML = '<p class="empty">Nenhuma confirmação recebida ainda.</p>';
+    return;
+  }
+
+  rows.forEach((row) => {
+    const attending = row.presenca === "Sim";
+    const totalPeople = attending ? Number(row.adultos || 0) + Number(row.criancas || 0) : 0;
+    const date = row.criado_em ? new Date(row.criado_em).toLocaleDateString("pt-BR") : "";
+
+    const card = document.createElement("div");
+    card.className = "rsvp-row";
+    card.innerHTML = `
+      <div class="rsvp-row-head">
+        <div>
+          <div class="rsvp-name">${escapeHtml(row.nome_responsavel)}</div>
+          <div class="rsvp-meta">${attending ? `${totalPeople} pessoa(s) · ${row.adultos || 0} adulto(s), ${row.criancas || 0} criança(s)` : "Não poderá comparecer"} · ${date}</div>
+        </div>
+        <span class="badge ${attending ? "badge-yes" : "badge-no"}">${attending ? "Confirmado" : "Não vai"}</span>
+      </div>
+      <div class="rsvp-details">
+        <p><strong>Telefone</strong> ${escapeHtml(row.telefone || "—")}</p>
+        ${attending ? `<p><strong>Convidados listados</strong> ${escapeHtml(row.nomes_convidados || "Não informado")}</p>` : ""}
+        ${row.recado ? `<p><strong>Recado</strong> ${escapeHtml(row.recado)}</p>` : ""}
+      </div>
+    `;
+
+    card.addEventListener("click", () => {
+      card.querySelector(".rsvp-details").classList.toggle("open");
+    });
+
+    rsvpList.append(card);
+  });
+}
+
+exportNamesButton.addEventListener("click", () => {
+  if (!confirmacoesCache.length) return;
+
+  const confirmados = confirmacoesCache.filter((r) => r.presenca === "Sim");
+  const lines = ["Lista de convidados confirmados — Victor & Luana", ""];
+
+  confirmados.forEach((row) => {
+    lines.push(`Responsável: ${row.nome_responsavel}`);
+    lines.push(`Convidados: ${row.nomes_convidados || row.nome_responsavel}`);
+    lines.push(`Adultos: ${row.adultos || 0} · Crianças: ${row.criancas || 0}`);
+    lines.push("");
+  });
+
+  const totalAdultos = confirmados.reduce((sum, r) => sum + Number(r.adultos || 0), 0);
+  const totalCriancas = confirmados.reduce((sum, r) => sum + Number(r.criancas || 0), 0);
+  lines.push("----------------------------------------");
+  lines.push(`Total de adultos: ${totalAdultos}`);
+  lines.push(`Total de crianças: ${totalCriancas}`);
+  lines.push(`Total geral: ${totalAdultos + totalCriancas}`);
+
+  const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "convidados-confirmados.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 checkSession();
