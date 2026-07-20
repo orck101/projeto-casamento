@@ -103,6 +103,15 @@
     .rsvp-details.open { display: block; }
     .rsvp-details p { margin: 0 0 .4rem; }
     .rsvp-details strong { display: inline-block; min-width: 130px; }
+    .message-visibility {
+      margin-top: .85rem; padding: .8rem .9rem; border-radius: 10px;
+      background: #f4f8f7; border: 1px solid rgba(27,122,114,.18);
+    }
+    .message-visibility label { display: flex; align-items: center; gap: .65rem; cursor: pointer; }
+    .message-visibility input { width: auto; margin: 0; accent-color: var(--accent); }
+    .message-visibility small { display: block; min-height: 1.2em; margin: .4rem 0 0 1.7rem; color: rgba(26,31,61,.6); }
+    .message-visibility small.ok { color: var(--accent-dark); }
+    .message-visibility small.error { color: var(--danger); }
 
     /* Pagamentos pendentes */
     .pending-row {

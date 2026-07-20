@@ -142,6 +142,17 @@ nav a:hover { color: var(--gold-dark); }
 .rsvp-inner { position: relative; z-index: 2; max-width: 790px; }
 .rsvp-inner p:not(.section-kicker) { max-width: 610px; margin: 0 auto 30px; color: var(--muted); }
 
+.guest-messages-section { background: var(--blue-dark); color: white; overflow: hidden; }
+.guest-messages-inner { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(45px, 7vw, 90px); align-items: center; }
+.guest-messages-heading h2 { margin: 0 0 20px; font-family: "Playfair Display", serif; font-size: clamp(2.4rem, 4.5vw, 4.2rem); font-weight: 500; line-height: 1.08; }
+.guest-messages-heading > p:last-child { margin: 0; color: rgba(255,255,255,.7); }
+.guest-messages-heading .section-kicker { color: #dccb9e; }
+.guest-message-card { position: relative; min-height: 290px; display: grid; align-content: center; padding: 54px 58px 38px; border: 1px solid rgba(255,255,255,.17); border-radius: 28px; background: rgba(255,255,255,.09); box-shadow: 0 24px 70px rgba(16,29,36,.2); transition: opacity .28s ease, transform .28s ease; }
+.guest-message-card.changing { opacity: 0; transform: translateY(10px); }
+.guest-message-mark { position: absolute; left: 28px; top: 10px; color: #dccb9e; font-family: "Playfair Display", serif; font-size: 6rem; line-height: 1; opacity: .9; }
+.guest-message-card blockquote { margin: 0; font-family: "Playfair Display", serif; font-size: clamp(1.4rem, 2.6vw, 2.2rem); line-height: 1.45; }
+.guest-message-counter { margin: 28px 0 0; color: rgba(255,255,255,.58); font-size: .68rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+
 .gifts-teaser { background: var(--paper-soft); }
 .gifts-panel { padding: 70px 72px; display: grid; grid-template-columns: 1fr .62fr; gap: 60px; align-items: center; border: 1px solid rgba(183,154,85,.25); border-radius: 32px; background: #fff; box-shadow: var(--shadow); }
 .gifts-copy h2 { font-size: clamp(2.2rem, 4vw, 3.7rem); }
@@ -172,6 +183,7 @@ footer a { margin-top: 10px; color: white; font-size: .82rem; }
 form, .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
 .full { grid-column: 1 / -1; }
 .field { display: grid; gap: 8px; }
+.field-hint { color: var(--muted); font-size: .7rem; font-weight: 500; line-height: 1.45; }
 label, legend { font-size: .78rem; font-weight: 700; letter-spacing: .02em; }
 input, textarea { width: 100%; border: 1px solid rgba(63,86,99,.2); border-radius: 12px; padding: 14px 15px; color: var(--ink); background: white; outline: none; }
 input:focus, textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(183,154,85,.12); }
@@ -207,6 +219,7 @@ textarea { resize: vertical; }
   .countdown-section { margin-top: -30px; }
   .countdown-card { grid-template-columns: 1fr; gap: 28px; padding: 30px 22px; text-align: center; }
   .welcome-grid { grid-template-columns: 1fr; }
+  .guest-messages-inner { grid-template-columns: 1fr; }
   .welcome-photo { width: min(86%, 510px); margin-inline: auto; }
   .event-grid { grid-template-columns: 1fr; }
   .event-card { min-height: 210px; }
@@ -241,6 +254,7 @@ textarea { resize: vertical; }
   form, .form-grid { grid-template-columns: 1fr; }
   .full { grid-column: auto; }
   .gifts-panel { padding: 42px 22px; }
+  .guest-message-card { min-height: 250px; padding: 48px 26px 30px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

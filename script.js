@@ -114,6 +114,10 @@ $('#rsvp-form').addEventListener('submit', async event => {
 
   if (error) {
     console.error('Erro ao registrar confirmação:', error);
+    if (error.code === '23505') {
+      showToast('Este telefone já possui uma confirmação. Para alterar sua resposta, fale conosco pelo WhatsApp.');
+      return;
+    }
     showToast('Algo deu errado ao registrar. Tenta de novo em instantes.');
     return;
   }
@@ -150,3 +154,56 @@ const observer = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.13 });
 $$('.reveal').forEach(element => observer.observe(element));
+
+async function loadGuestMessages() {
+  const section = $('#guest-messages-section');
+  const card = $('#guest-message-card');
+  const messageText = $('#guest-message-text');
+  const counter = $('#guest-message-counter');
+
+  const { data, error } = await db.rpc('listar_recados_publicos');
+  if (error) {
+    console.error('Erro ao carregar recados públicos:', error);
+    return;
+  }
+
+  const messages = [...new Set(
+    (data || [])
+      .map(item => String(item.recado || '').trim())
+      .filter(Boolean)
+  )];
+
+  if (!messages.length) return;
+
+  let activeIndex = 0;
+  section.hidden = false;
+
+  function renderMessage(index, animate = false) {
+    const update = () => {
+      messageText.textContent = messages[index];
+      counter.textContent = messages.length > 1
+        ? `Mensagem ${index + 1} de ${messages.length}`
+        : 'Mensagem de um convidado';
+      card.classList.remove('changing');
+    };
+
+    if (!animate) {
+      update();
+      return;
+    }
+
+    card.classList.add('changing');
+    window.setTimeout(update, 280);
+  }
+
+  renderMessage(activeIndex);
+
+  if (messages.length > 1) {
+    window.setInterval(() => {
+      activeIndex = (activeIndex + 1) % messages.length;
+      renderMessage(activeIndex, true);
+    }, 6500);
+  }
+}
+
+loadGuestMessages();

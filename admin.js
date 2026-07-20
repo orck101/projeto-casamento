@@ -256,12 +256,56 @@ function renderRsvpList(rows) {
         <p><strong>Telefone</strong> ${escapeHtml(row.telefone || "—")}</p>
         ${attending ? `<p><strong>Convidados listados</strong> ${escapeHtml(row.nomes_convidados || "Não informado")}</p>` : ""}
         ${row.recado ? `<p><strong>Recado</strong> ${escapeHtml(row.recado)}</p>` : ""}
+        ${attending && row.recado ? `
+          <div class="message-visibility" data-message-visibility-wrap>
+            <label>
+              <input type="checkbox" data-message-visibility ${row.exibir_recado ? "checked" : ""}>
+              <span>Exibir este recado anonimamente na página inicial</span>
+            </label>
+            <small data-message-visibility-feedback></small>
+          </div>
+        ` : ""}
       </div>
     `;
 
     card.addEventListener("click", () => {
       card.querySelector(".rsvp-details").classList.toggle("open");
     });
+
+    const visibilityWrap = card.querySelector("[data-message-visibility-wrap]");
+    const visibilityToggle = card.querySelector("[data-message-visibility]");
+    const visibilityFeedback = card.querySelector("[data-message-visibility-feedback]");
+
+    if (visibilityWrap && visibilityToggle) {
+      visibilityWrap.addEventListener("click", (event) => event.stopPropagation());
+      visibilityToggle.addEventListener("change", async () => {
+        const nextValue = visibilityToggle.checked;
+        visibilityToggle.disabled = true;
+        visibilityFeedback.textContent = "Salvando...";
+        visibilityFeedback.className = "";
+
+        const { error } = await db
+          .from("confirmacoes")
+          .update({ exibir_recado: nextValue })
+          .eq("id", row.id);
+
+        visibilityToggle.disabled = false;
+
+        if (error) {
+          visibilityToggle.checked = !nextValue;
+          visibilityFeedback.textContent = "Não foi possível alterar. Tente novamente.";
+          visibilityFeedback.className = "error";
+          console.error(error);
+          return;
+        }
+
+        row.exibir_recado = nextValue;
+        visibilityFeedback.textContent = nextValue
+          ? "Recado aprovado para a página inicial."
+          : "Recado retirado da página inicial.";
+        visibilityFeedback.className = "ok";
+      });
+    }
 
     rsvpList.append(card);
   });

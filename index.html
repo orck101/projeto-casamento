@@ -148,6 +148,21 @@
       </div>
     </section>
 
+    <section class="guest-messages-section section" id="guest-messages-section" hidden>
+      <div class="container guest-messages-inner">
+        <div class="guest-messages-heading">
+          <p class="section-kicker">Recados dos convidados</p>
+          <h2>Carinho para o nosso novo capítulo</h2>
+          <p>Mensagens deixadas por quem já confirmou presença para celebrar conosco.</p>
+        </div>
+        <div class="guest-message-card" id="guest-message-card">
+          <span class="guest-message-mark" aria-hidden="true">“</span>
+          <blockquote id="guest-message-text"></blockquote>
+          <p class="guest-message-counter" id="guest-message-counter"></p>
+        </div>
+      </div>
+    </section>
+
     <section class="gifts-teaser section">
       <div class="container gifts-panel reveal">
         <div class="gifts-copy">
@@ -191,6 +206,7 @@
         <div class="field full">
           <label for="phone">Telefone</label>
           <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="(12) 99999-9999" required>
+          <small class="field-hint">O telefone é usado para impedir confirmações duplicadas.</small>
         </div>
         <fieldset class="attendance-options full">
           <legend>Você poderá participar do almoço?</legend>
@@ -214,6 +230,7 @@
         <div class="field full">
           <label for="message">Recado para os noivos</label>
           <textarea id="message" name="message" rows="3" placeholder="Campo opcional"></textarea>
+          <small class="field-hint">O recado poderá aparecer anonimamente no site depois da aprovação dos noivos.</small>
         </div>
         <label class="consent full">
           <input type="checkbox" required>
