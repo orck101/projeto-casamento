@@ -3,7 +3,7 @@
 const CONFIG = {
   whatsapp: "5512991360571",
   pixKey: "2ef918ce-ff4f-4ea5-bb29-b11af23d4543",
-  pixHolder: "Victor Hugo Freitas", // Nome do titular (28 caracteres no nome completo excede o limite de 25 do Pix, então usamos uma versão enxuta)
+  pixHolder: "Victor Hugo N Freitas", // Nome do titular (28 caracteres no nome completo excede o limite de 25 do Pix, então usamos uma versão enxuta)
   pixCity: "Taubate"
 };
 
