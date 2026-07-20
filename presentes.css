@@ -215,16 +215,14 @@ a { color: inherit; }
 .gift-summary { margin: 24px 0; padding: 20px; border-radius: 18px; background: var(--paper); }
 .gift-summary p { display: flex; justify-content: space-between; gap: 20px; margin: 7px 0; color: var(--ink-soft); font-size: .8rem; text-align: left; }
 .gift-summary strong { color: var(--ink); text-align: right; }
-.demo-notice { padding: 17px; border: 1px solid rgba(184,150,80,.3); border-radius: 16px; background: var(--gold-soft); text-align: left; }
-.demo-notice strong { font-size: .76rem; text-transform: uppercase; }
-.demo-notice p { margin: 6px 0 0; color: var(--ink-soft); font-size: .72rem; line-height: 1.5; }
+.payment-notice { padding: 17px; border: 1px solid rgba(184,150,80,.3); border-radius: 16px; background: var(--gold-soft); text-align: left; }
+.payment-notice strong { font-size: .76rem; text-transform: uppercase; }
+.payment-notice p { margin: 6px 0 0; color: var(--ink-soft); font-size: .72rem; line-height: 1.5; }
 .pix-box { margin: 20px 0; padding: 18px; border: 1px dashed var(--teal); border-radius: 16px; background: var(--teal-soft); }
 .pix-box p { margin: 0 0 4px; color: var(--ink-soft); font-size: .7rem; text-transform: uppercase; }
 .pix-box strong { display: block; overflow-wrap: anywhere; font-family: "Space Mono", monospace; }
 .pix-box button { margin-top: 10px; border: 0; background: transparent; color: var(--teal); cursor: pointer; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
 .success-actions { display: grid; gap: 6px; margin-top: 22px; }
-
-.demo-ribbon { position: fixed; z-index: 75; right: 16px; bottom: 16px; padding: 9px 13px; border-radius: 999px; background: rgba(32,53,64,.92); color: white; box-shadow: 0 8px 25px rgba(0,0,0,.2); font-size: .6rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.visible { opacity: 1; transform: none; }
@@ -276,7 +274,6 @@ a { color: inherit; }
   .modal-gift-icon { margin: auto; }
   .amount-presets { grid-template-columns: repeat(3, 1fr); }
   .modal-form-grid { grid-template-columns: 1fr; }
-  .demo-ribbon { right: 10px; bottom: 10px; left: 10px; text-align: center; }
 }
 
 @media (max-width: 430px) {

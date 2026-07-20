@@ -1,18 +1,20 @@
 # Convite digital — Victor & Luana
 
-Primeiro módulo do site do casamento.
+Site do convite e da lista de presentes do casamento de Victor e Luana.
 
 ## Conteúdo
 
-- `index.html`: convite digital completo.
+- `index.html`: convite digital, detalhes do almoço e confirmação de presença.
 - `styles.css`: identidade visual inspirada no convite impresso.
 - `script.js`: contagem regressiva, menu, animações e formulário RSVP.
-- `presentes.html`: página provisória para o próximo módulo.
+- `presentes.html`: catálogo futurístico e fluxo de pagamento via Pix.
+- `presentes.js`: integração com o Supabase, geração do Pix e mural de recados.
+- `admin.html`: painel privado para confirmações, presentes e pagamentos.
 - `assets/`: fotografias otimizadas e elementos botânicos.
 
 ## Confirmação de presença
 
-O formulário monta uma mensagem estruturada e abre o WhatsApp no número `(12) 99136-0571`. O convidado precisa tocar em **Enviar** para concluir. Uma cópia também é gravada no `localStorage` do próprio navegador apenas para teste; isso não funciona como banco de dados central.
+O formulário grava as respostas na tabela `confirmacoes` do Supabase. Os dados ficam disponíveis no painel privado, incluindo responsável, telefone, acompanhantes, número de adultos, crianças e recado.
 
 ## Data configurada
 
@@ -30,27 +32,19 @@ Depois acesse `http://localhost:8000`.
 
 ## Módulo da lista de presentes
 
-A página `presentes.html` agora contém o protótipo completo da lista futurística:
+A página `presentes.html` contém a lista futurística conectada ao Supabase:
 
 - catálogo com 12 presentes e três categorias;
 - progresso circular em formato de órbita;
-- filtros por categoria;
 - formulário de contribuição com valores sugeridos e valor livre;
 - mural de recados;
-- atualização simulada do progresso por `localStorage`;
-- resumo e envio da intenção de presente pelo WhatsApp;
+- atualização do progresso após a confirmação do pagamento;
+- geração de QR Code e código Pix Copia e Cola;
+- resumo e aviso opcional aos noivos pelo WhatsApp;
 - layout responsivo para celular e computador.
 
 ### Pagamentos
 
-A página está em modo de demonstração e não realiza cobranças. Para exibir uma chave Pix no resumo, edite o início de `presentes.js`:
+O convidado escolhe uma invenção, informa o valor e gera um Pix com o valor preenchido. O pagamento é concluído somente quando ele confirma a operação no aplicativo do próprio banco. O site não solicita senha, cartão ou qualquer dado bancário.
 
-```js
-const CONFIG = {
-  whatsapp: "5512991360571",
-  pixKey: "SUA_CHAVE_PIX",
-  pixHolder: "Victor & Luana"
-};
-```
-
-Para uso real, o registro do presente e a atualização dos valores devem ser conectados a um banco de dados e confirmados somente após a validação do pagamento.
+Cada contribuição é registrada inicialmente como `pendente`. Depois de conferir o recebimento no banco, Victor ou Luana confirma o pagamento no painel privado. Somente as contribuições confirmadas atualizam o valor arrecadado.

@@ -74,11 +74,11 @@ function buildPixPayload({ key, holder, city, amount, description, txid }) {
 
 function renderPixBox(amount, description) {
   const pixBox = document.querySelector("#pix-box");
-  const demoNotice = document.querySelector("#demo-notice");
+  const paymentNotice = document.querySelector("#payment-notice");
 
   if (!CONFIG.pixKey.trim()) {
     pixBox.hidden = true;
-    demoNotice.hidden = false;
+    paymentNotice.hidden = false;
     return;
   }
 
@@ -95,9 +95,7 @@ function renderPixBox(amount, description) {
   document.querySelector("#pix-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
 
   pixBox.hidden = false;
-  demoNotice.hidden = true;
-  demoNotice.querySelector("strong").textContent = "Presente registrado!";
-  demoNotice.querySelector("p").textContent = "Assim que recebermos seu Pix, seu presente será confirmado por aqui.";
+  paymentNotice.hidden = true;
 }
 
 const sampleMessages = [
@@ -436,7 +434,7 @@ giftForm.addEventListener("submit", async (event) => {
   const ok = await saveContribution(activeGift.id, amount, name, message);
 
   submitButton.disabled = false;
-  submitButton.textContent = "Preparar meu presente";
+  submitButton.textContent = "Gerar meu Pix";
 
   if (!ok) {
     amountHelper.textContent = "Algo deu errado ao registrar. Tenta de novo em instantes.";
