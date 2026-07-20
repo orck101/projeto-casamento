@@ -103,6 +103,22 @@
     .rsvp-details.open { display: block; }
     .rsvp-details p { margin: 0 0 .4rem; }
     .rsvp-details strong { display: inline-block; min-width: 130px; }
+
+    /* Pagamentos pendentes */
+    .pending-row {
+      background: var(--card); border-radius: 14px; padding: 1rem 1.25rem;
+      margin-bottom: .75rem; border: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .pending-info strong { display: block; font-size: 1rem; }
+    .pending-info .pending-gift { color: var(--accent-dark); font-weight: 600; font-size: .85rem; }
+    .pending-info .pending-meta { color: rgba(26,31,61,.6); font-size: .82rem; margin-top: .15rem; }
+    .pending-info .pending-message { font-size: .85rem; font-style: italic; margin-top: .3rem; max-width: 460px; }
+    .pending-actions { display: flex; gap: .5rem; align-items: center; }
+    .btn-confirm { background: var(--accent); color: #fff; }
+    .btn-confirm:hover { background: var(--accent-dark); }
+    .btn-ignore { background: #fff; color: rgba(26,31,61,.55); border: 1px solid var(--border); }
+    .btn-ignore:hover { background: #f4f4f4; }
   </style>
 </head>
 <body>
@@ -128,11 +144,18 @@
     <div id="panel-view">
       <div class="topbar">
         <div>
-          <h1>Painel de presentes</h1>
-          <p class="subtitle">Ajuste os valores conforme os Pix forem caindo</p>
+          <h1>Pagamentos pendentes</h1>
+          <p class="subtitle">Confira no seu banco e confirme os que já caíram</p>
         </div>
         <button class="logout-btn" id="logout-button">Sair</button>
       </div>
+
+      <div id="pending-list"></div>
+
+      <div class="section-divider"></div>
+
+      <h2>Presentes</h2>
+      <p class="subtitle">Ajuste manual, se precisar corrigir algo</p>
 
       <div class="summary" id="summary"></div>
 
