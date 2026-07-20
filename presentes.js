@@ -1,316 +1,491 @@
-:root {
-  --paper: #f4efe5;
-  --paper-2: #fbf8f2;
-  --ink: #203540;
-  --ink-soft: #5f7078;
-  --teal: #557f82;
-  --teal-soft: #dce8e6;
-  --coral: #d47d68;
-  --coral-soft: #f3ddd6;
-  --gold: #b89650;
-  --gold-soft: #eee4ca;
-  --white: #fffdf9;
-  --line: rgba(32, 53, 64, .13);
-  --shadow: 0 24px 70px rgba(38, 55, 62, .12);
-  --radius: 28px;
+"use strict";
+
+const CONFIG = {
+  whatsapp: "5512991360571",
+  pixKey: "2ef918ce-ff4f-4ea5-bb29-b11af23d4543",
+  pixHolder: "Victor Hugo N Freitas", // Nome do titular (28 caracteres no nome completo excede o limite de 25 do Pix, então usamos uma versão enxuta)
+  pixCity: "Taubate"
+};
+
+const categoryLabels = {
+  casa: "Casa do Futuro",
+  lua: "Missão Lua de Mel",
+  festa: "Festa de Lançamento"
+};
+
+// Cliente Supabase (usa as chaves definidas em config.js)
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ------------------------------
+// Geração do código Pix Copia e Cola (padrão EMV do Banco Central)
+// ------------------------------
+function sanitizePixText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .toUpperCase()
+    .trim();
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  background: var(--paper);
-  color: var(--ink);
-  font-family: "Montserrat", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-body.modal-open { overflow: hidden; }
-button, input, textarea { font: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-img, svg { display: block; }
-a { color: inherit; }
-
-.svg-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
-.svg-sprite symbol, svg use { fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-.skip-link { position: fixed; z-index: 999; left: 18px; top: -60px; padding: 12px 18px; background: var(--ink); color: white; text-decoration: none; border-radius: 10px; }
-.skip-link:focus { top: 18px; }
-.shell { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
-
-.gift-header {
-  position: sticky;
-  z-index: 40;
-  top: 0;
-  border-bottom: 1px solid rgba(255,255,255,.15);
-  background: rgba(31, 52, 63, .93);
-  color: white;
-  backdrop-filter: blur(14px);
-}
-.header-inner { height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
-.gift-brand { display: inline-flex; align-items: center; gap: 7px; color: white; text-decoration: none; font-family: "Fredoka", sans-serif; font-size: 1.25rem; font-weight: 700; }
-.gift-brand i { color: var(--gold); font-family: "Great Vibes", cursive; font-size: 1.45rem; font-weight: 400; }
-.gift-header nav { display: flex; align-items: center; gap: 27px; }
-.gift-header nav a { color: rgba(255,255,255,.76); text-decoration: none; font-size: .78rem; font-weight: 600; letter-spacing: .04em; transition: color .2s ease; }
-.gift-header nav a:hover { color: white; }
-.gift-header .back-link { min-height: 42px; display: inline-flex; align-items: center; padding: 0 18px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; color: white; }
-.gift-menu-button { display: none; width: 45px; height: 45px; padding: 11px; border: 0; background: transparent; }
-.gift-menu-button span { display: block; height: 2px; margin: 5px 0; border-radius: 3px; background: white; }
-.gift-nav-mobile { display: none; }
-
-.future-hero { position: relative; min-height: 770px; overflow: hidden; background: var(--ink); color: white; isolation: isolate; }
-.atomic-grid { position: absolute; inset: 0; z-index: -2; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size: 54px 54px; mask-image: linear-gradient(to bottom, #000, transparent 88%); }
-.atomic-grid::after { content: ""; position: absolute; inset: -20%; background: radial-gradient(circle at 70% 28%, rgba(85,127,130,.55), transparent 28%), radial-gradient(circle at 15% 65%, rgba(212,125,104,.24), transparent 24%); }
-.future-hero-grid { min-height: 770px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 70px; align-items: center; padding: 90px 0 120px; }
-.future-copy { position: relative; z-index: 2; }
-.future-kicker { margin: 0 0 15px; color: var(--gold); font-size: .72rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
-.future-copy h1 { max-width: 750px; margin: 0; font-family: "Fredoka", sans-serif; font-size: clamp(3.6rem, 7.3vw, 7rem); font-weight: 600; line-height: .92; letter-spacing: -.045em; }
-.future-copy h1 span { display: block; margin-top: 13px; color: #f1e8d2; font-family: "Great Vibes", cursive; font-size: .76em; font-weight: 400; letter-spacing: 0; line-height: 1; }
-.future-lead { max-width: 690px; margin: 32px 0 15px; color: white; font-size: clamp(1.15rem, 2vw, 1.45rem); line-height: 1.55; }
-.future-explanation { max-width: 700px; margin: 0; color: rgba(255,255,255,.72); font-size: .98rem; line-height: 1.75; }
-.future-explanation strong { color: white; }
-.future-actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 34px; }
-.future-button { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 24px; border: 0; border-radius: 999px; text-decoration: none; cursor: pointer; font-size: .76rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
-.future-button:hover { transform: translateY(-2px); }
-.future-button.primary { background: var(--coral); color: white; box-shadow: 0 14px 30px rgba(212,125,104,.25); }
-.future-button.primary:hover { box-shadow: 0 17px 36px rgba(212,125,104,.34); }
-.future-button.ghost { border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.05); color: white; }
-.future-button.ghost-dark { border: 1px solid rgba(32,53,64,.22); background: transparent; color: var(--ink); }
-.future-button.text-only { background: transparent; color: var(--ink-soft); }
-.future-button.wide { width: 100%; }
-.future-note { max-width: 680px; margin: 19px 0 0; color: rgba(255,255,255,.52); font-size: .78rem; line-height: 1.6; }
-
-.future-visual { position: relative; min-height: 535px; display: grid; place-items: center; }
-.future-visual figure { position: relative; z-index: 2; width: min(390px, 84%); aspect-ratio: .79; margin: 0; padding: 10px; border: 1px solid rgba(255,255,255,.22); border-radius: 190px 190px 28px 28px; background: rgba(255,255,255,.06); transform: rotate(2.2deg); box-shadow: 0 35px 80px rgba(0,0,0,.28); }
-.future-visual figure::before { content: ""; position: absolute; inset: 20px; z-index: 2; border: 1px solid rgba(255,255,255,.22); border-radius: inherit; pointer-events: none; }
-.future-visual figure img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 24%; border-radius: 180px 180px 20px 20px; filter: saturate(.82) contrast(.96); }
-.photo-orbit { position: absolute; z-index: 1; width: 510px; height: 510px; border: 1px solid rgba(184,150,80,.65); border-radius: 50%; transform: scaleY(.54) rotate(-18deg); }
-.photo-orbit::before, .photo-orbit::after { content: ""; position: absolute; inset: 45px; border: 1px solid rgba(85,127,130,.65); border-radius: 50%; }
-.photo-orbit::after { inset: 88px; border-color: rgba(212,125,104,.55); }
-.satellite { position: absolute; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: var(--paper); color: var(--ink); font-family: "Fredoka", sans-serif; font-style: normal; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.22); transform: scaleY(1.85) rotate(18deg); }
-.satellite-a { left: 24px; top: 210px; }
-.satellite-b { right: 20px; top: 238px; }
-.satellite-c { left: 218px; bottom: -12px; color: var(--coral); }
-.future-stamp { position: absolute; z-index: 4; right: -12px; bottom: 16px; width: 170px; height: 170px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; background: var(--gold); color: var(--ink); text-align: center; transform: rotate(-8deg); box-shadow: 0 20px 45px rgba(0,0,0,.24); }
-.future-stamp small { font-size: .58rem; font-weight: 700; letter-spacing: .17em; }
-.future-stamp strong { margin: 7px 0 4px; font-family: "Space Mono", monospace; font-size: 1.25rem; }
-.future-stamp span { width: 110px; font-size: .62rem; font-weight: 600; line-height: 1.35; text-transform: uppercase; }
-.orbit { position: absolute; z-index: -1; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; }
-.orbit i { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: var(--coral); box-shadow: 0 0 0 7px rgba(212,125,104,.12); }
-.orbit-one { width: 440px; height: 440px; left: -225px; top: 120px; }
-.orbit-one i { right: 50px; top: 40px; }
-.orbit-two { width: 310px; height: 310px; right: -140px; bottom: 120px; }
-.orbit-two i { left: 25px; bottom: 65px; background: var(--gold); box-shadow: 0 0 0 7px rgba(184,150,80,.12); }
-.hero-wave { position: absolute; z-index: 3; right: -3%; bottom: -62px; left: -3%; height: 135px; border-radius: 50% 50% 0 0 / 100% 100% 0 0; background: var(--paper); }
-
-.how-section { padding: 120px 0 90px; }
-.section-title { max-width: 720px; margin-bottom: 45px; }
-.section-title h2, .showcase-heading h2, .free-gift-panel h2, .return-panel h2 { margin: 0; font-family: "Fredoka", sans-serif; font-size: clamp(2.25rem, 4.5vw, 4rem); font-weight: 600; line-height: 1.04; letter-spacing: -.035em; }
-.section-title > p:last-child, .showcase-heading > p, .free-gift-panel > div > p:last-child, .return-panel > p { color: var(--ink-soft); line-height: 1.75; }
-.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.step-card { position: relative; min-height: 285px; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,253,249,.68); overflow: hidden; }
-.step-card > span { position: absolute; top: 22px; right: 25px; color: rgba(32,53,64,.12); font-family: "Space Mono", monospace; font-size: 2.8rem; font-weight: 700; }
-.step-icon { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 18px; background: var(--ink); color: white; }
-.step-icon svg { width: 31px; height: 31px; }
-.step-card:nth-child(2) .step-icon { background: var(--coral); }
-.step-card:nth-child(3) .step-icon { background: var(--gold); color: var(--ink); }
-.step-card h3 { margin: 26px 0 10px; font-family: "Fredoka", sans-serif; font-size: 1.25rem; }
-.step-card p { margin: 0; color: var(--ink-soft); font-size: .91rem; line-height: 1.7; }
-
-.gift-showcase { padding: 95px 0 110px; background: var(--paper-2); }
-.showcase-heading { display: grid; grid-template-columns: 1.3fr .7fr; gap: 70px; align-items: end; margin-bottom: 36px; }
-.showcase-heading > p { margin: 0; font-size: .88rem; }
-.category-tabs { display: flex; gap: 10px; margin-bottom: 34px; overflow-x: auto; padding-bottom: 3px; scrollbar-width: none; }
-.category-tabs::-webkit-scrollbar { display: none; }
-.category-tab { flex: 0 0 auto; min-height: 46px; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--ink-soft); cursor: pointer; font-size: .75rem; font-weight: 700; }
-.category-tab.active { border-color: var(--ink); background: var(--ink); color: white; }
-.dot { width: 8px; height: 8px; border-radius: 50%; }
-.dot.teal { background: var(--teal); }.dot.coral { background: var(--coral); }.dot.gold { background: var(--gold); }
-.gift-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-.gift-card { position: relative; min-height: 485px; display: flex; flex-direction: column; padding: 25px; border: 1px solid var(--line); border-radius: 30px; background: var(--white); box-shadow: 0 10px 35px rgba(35,54,63,.055); overflow: hidden; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
-.gift-card:hover { transform: translateY(-7px); border-color: rgba(32,53,64,.22); box-shadow: 0 24px 55px rgba(35,54,63,.12); }
-.gift-card.hidden { display: none; }
-.gift-card::after { content: ""; position: absolute; right: -45px; top: -55px; width: 155px; height: 155px; border: 1px solid currentColor; border-radius: 50%; opacity: .1; }
-.gift-card[data-category="casa"] { --accent: var(--teal); --accent-soft: var(--teal-soft); color: var(--teal); }
-.gift-card[data-category="lua"] { --accent: var(--coral); --accent-soft: var(--coral-soft); color: var(--coral); }
-.gift-card[data-category="festa"] { --accent: var(--gold); --accent-soft: var(--gold-soft); color: var(--gold); }
-.card-topline { display: flex; align-items: center; justify-content: space-between; min-height: 25px; }
-.card-category { margin: 0; color: var(--accent); font-size: .65rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-.complete-badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; border-radius: 999px; background: var(--ink); color: white; font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.complete-badge::before { content: "✓"; }
-.orbital-progress { --progress: 0deg; position: relative; width: 154px; height: 154px; display: grid; place-items: center; margin: 24px auto 23px; border-radius: 50%; background: conic-gradient(var(--accent) var(--progress), rgba(32,53,64,.08) 0); }
-.orbital-progress::before { content: ""; position: absolute; inset: 9px; border-radius: 50%; background: var(--white); }
-.orbital-progress::after { content: ""; position: absolute; inset: -10px; border: 1px solid var(--accent); border-radius: 50%; opacity: .28; transform: scaleY(.72) rotate(24deg); }
-.orbit-dot { position: absolute; z-index: 3; left: calc(50% - 6px); top: calc(50% - 6px); width: 12px; height: 12px; border: 3px solid var(--white); border-radius: 50%; background: var(--accent); transform-origin: 6px 6px; transform: rotate(var(--progress)) translateY(-77px); }
-.gift-icon { position: relative; z-index: 2; width: 64px; height: 64px; display: grid; place-items: center; border-radius: 21px; background: var(--accent-soft); color: var(--accent); }
-.gift-icon svg { width: 39px; height: 39px; }
-.gift-card h3 { margin: 0; color: var(--ink); font-family: "Fredoka", sans-serif; font-size: 1.45rem; font-weight: 600; line-height: 1.1; text-align: center; }
-.gift-description { min-height: 70px; margin: 12px 0 19px; color: var(--ink-soft); font-size: .82rem; line-height: 1.65; text-align: center; }
-.progress-copy { display: flex; justify-content: space-between; align-items: end; gap: 15px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink); }
-.progress-copy div span { display: block; margin-bottom: 4px; color: var(--ink-soft); font-size: .62rem; font-weight: 600; text-transform: uppercase; }
-.progress-copy strong { font-family: "Space Mono", monospace; font-size: .87rem; }
-.progress-copy > strong { color: var(--accent); font-size: 1rem; }
-.gift-card button { width: 100%; min-height: 48px; margin-top: 20px; border: 0; border-radius: 999px; background: var(--ink); color: white; cursor: pointer; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; transition: background .2s ease, transform .2s ease; }
-.gift-card button:hover { background: var(--accent); transform: translateY(-2px); }
-.gift-card.complete button { border: 1px solid var(--line); background: transparent; color: var(--ink); }
-
-.free-gift-section { padding: 80px 0; }
-.free-gift-panel { display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; padding: 42px; border-radius: 32px; background: var(--ink); color: white; box-shadow: var(--shadow); }
-.free-gift-panel .future-kicker { margin-bottom: 9px; }
-.free-gift-panel h2 { font-size: clamp(1.8rem, 3vw, 2.8rem); }
-.free-gift-panel > div > p:last-child { max-width: 720px; margin-bottom: 0; color: rgba(255,255,255,.65); }
-.free-gift-icon { width: 82px; height: 82px; display: grid; place-items: center; border-radius: 50%; background: var(--gold); color: var(--ink); }
-.free-gift-icon svg { width: 42px; height: 42px; }
-
-.messages-section { padding: 100px 0 120px; background: var(--teal-soft); overflow: hidden; }
-.message-marquee { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-.message-card { min-height: 210px; display: flex; flex-direction: column; justify-content: space-between; padding: 27px; border: 1px solid rgba(32,53,64,.11); border-radius: 25px; background: rgba(255,253,249,.78); }
-.message-card blockquote { margin: 0; color: var(--ink); font-family: "Fredoka", sans-serif; font-size: 1.05rem; line-height: 1.55; }
-.message-card footer { margin-top: 24px; color: var(--teal); font-family: "Space Mono", monospace; font-size: .71rem; font-weight: 700; text-transform: uppercase; }
-.empty-messages { grid-column: 1 / -1; padding: 50px; border: 1px dashed rgba(32,53,64,.22); border-radius: 25px; color: var(--ink-soft); text-align: center; }
-
-.return-section { padding: 110px 0; }
-.return-panel { max-width: 900px; padding: 65px; border: 1px solid rgba(184,150,80,.35); border-radius: 34px; background: var(--white); text-align: center; box-shadow: 0 18px 55px rgba(32,53,64,.07); }
-.return-panel .future-kicker { margin-bottom: 12px; }
-.return-panel > p { max-width: 660px; margin: 20px auto 28px; }
-
-.gift-footer { padding: 37px 0; background: var(--ink); color: rgba(255,255,255,.62); }
-.footer-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px; font-size: .72rem; }
-.footer-grid a { justify-self: end; color: white; text-decoration: none; }
-.footer-script { margin: 0; color: white; font-family: "Great Vibes", cursive; font-size: 2rem; }
-.footer-script span { color: var(--gold); }
-
-.gift-modal[hidden] { display: none; }
-.gift-modal { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 24px; }
-.gift-modal-backdrop { position: absolute; inset: 0; background: rgba(14,28,35,.78); backdrop-filter: blur(7px); }
-.gift-modal-panel { position: relative; z-index: 2; width: min(690px, 100%); max-height: calc(100vh - 42px); overflow-y: auto; padding: 38px; border-radius: 30px; background: var(--white); box-shadow: 0 30px 100px rgba(0,0,0,.35); }
-.gift-modal-close { position: absolute; z-index: 4; right: 18px; top: 16px; width: 42px; height: 42px; border: 0; border-radius: 50%; background: var(--paper); color: var(--ink); cursor: pointer; font-size: 1.65rem; line-height: 1; }
-.modal-gift-heading { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; padding-right: 38px; }
-.modal-gift-icon { width: 78px; height: 78px; display: grid; place-items: center; border-radius: 23px; background: var(--teal-soft); color: var(--teal); }
-.modal-gift-icon svg { width: 45px; height: 45px; }
-.modal-category { margin: 0 0 6px; color: var(--teal); font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-.modal-gift-heading h2 { margin: 0; font-family: "Fredoka", sans-serif; font-size: clamp(1.7rem, 4vw, 2.55rem); line-height: 1.05; }
-.modal-gift-heading p:last-child { margin: 10px 0 0; color: var(--ink-soft); font-size: .82rem; line-height: 1.55; }
-#gift-form { margin-top: 30px; }
-.amount-section > label, .field label { display: block; margin-bottom: 9px; color: var(--ink); font-size: .74rem; font-weight: 700; }
-.amount-presets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.amount-presets button { min-height: 42px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper-2); color: var(--ink); cursor: pointer; font-family: "Space Mono", monospace; font-size: .7rem; }
-.amount-presets button.active { border-color: var(--ink); background: var(--ink); color: white; }
-.custom-amount-wrap { min-height: 53px; display: flex; align-items: center; margin-top: 10px; border: 1px solid var(--line); border-radius: 13px; background: white; }
-.custom-amount-wrap span { padding-left: 16px; color: var(--ink-soft); font-family: "Space Mono", monospace; }
-.custom-amount-wrap input { width: 100%; height: 51px; padding: 0 15px 0 8px; border: 0; outline: none; background: transparent; color: var(--ink); font-family: "Space Mono", monospace; }
-.amount-helper { margin: 8px 0 0; color: var(--ink-soft); font-size: .7rem; line-height: 1.45; }
-.modal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 25px; }
-.field.full { grid-column: 1 / -1; }
-.field label span { color: var(--ink-soft); font-weight: 500; }
-.field input, .field textarea { width: 100%; padding: 14px 15px; border: 1px solid var(--line); border-radius: 13px; outline: none; background: white; color: var(--ink); transition: border-color .2s ease, box-shadow .2s ease; }
-.field textarea { min-height: 95px; resize: vertical; }
-.field input:focus, .field textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 4px rgba(85,127,130,.12); }
-.modal-actions { margin-top: 22px; }
-.modal-actions p { margin: 10px 0 0; color: var(--ink-soft); font-size: .68rem; text-align: center; }
-.gift-success { text-align: center; }
-.success-orbit { position: relative; width: 105px; height: 105px; display: grid; place-items: center; margin: 7px auto 24px; border: 1px solid var(--coral); border-radius: 50%; color: var(--coral); }
-.success-orbit::after { content: ""; position: absolute; inset: -15px; border: 1px solid rgba(212,125,104,.3); border-radius: 50%; transform: scaleY(.57) rotate(28deg); }
-.success-orbit svg { width: 50px; height: 50px; }
-.gift-success h2 { margin: 0; font-family: "Fredoka", sans-serif; font-size: 2.25rem; }
-.gift-summary { margin: 24px 0; padding: 20px; border-radius: 18px; background: var(--paper); }
-.gift-summary p { display: flex; justify-content: space-between; gap: 20px; margin: 7px 0; color: var(--ink-soft); font-size: .8rem; text-align: left; }
-.gift-summary strong { color: var(--ink); text-align: right; }
-.demo-notice { padding: 17px; border: 1px solid rgba(184,150,80,.3); border-radius: 16px; background: var(--gold-soft); text-align: left; }
-.demo-notice strong { font-size: .76rem; text-transform: uppercase; }
-.demo-notice p { margin: 6px 0 0; color: var(--ink-soft); font-size: .72rem; line-height: 1.5; }
-.pix-box { margin: 20px 0; padding: 18px; border: 1px dashed var(--teal); border-radius: 16px; background: var(--teal-soft); }
-.pix-box p { margin: 0 0 4px; color: var(--ink-soft); font-size: .7rem; text-transform: uppercase; }
-.pix-box strong { display: block; overflow-wrap: anywhere; font-family: "Space Mono", monospace; }
-.pix-box button { margin-top: 10px; border: 0; background: transparent; color: var(--teal); cursor: pointer; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
-.success-actions { display: grid; gap: 6px; margin-top: 22px; }
-
-.demo-ribbon { position: fixed; z-index: 75; right: 16px; bottom: 16px; padding: 9px 13px; border-radius: 999px; background: rgba(32,53,64,.92); color: white; box-shadow: 0 8px 25px rgba(0,0,0,.2); font-size: .6rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
-
-.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
-.reveal.visible { opacity: 1; transform: none; }
-
-@media (max-width: 980px) {
-  .future-hero-grid { grid-template-columns: 1fr; gap: 30px; padding-top: 70px; text-align: center; }
-  .future-copy h1, .future-lead, .future-explanation, .future-note { margin-left: auto; margin-right: auto; }
-  .future-actions { justify-content: center; }
-  .future-visual { min-height: 500px; }
-  .showcase-heading { grid-template-columns: 1fr; gap: 18px; }
-  .gift-grid { grid-template-columns: repeat(2, 1fr); }
-  .free-gift-panel { grid-template-columns: auto 1fr; }
-  .free-gift-panel > button { grid-column: 1 / -1; width: 100%; }
-  .message-marquee { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr; text-align: center; }
-  .footer-grid a { justify-self: center; }
+function tlv(id, value) {
+  const length = String(value.length).padStart(2, "0");
+  return `${id}${length}${value}`;
 }
 
-@media (max-width: 760px) {
-  .shell { width: min(100% - 28px, 1180px); }
-  .gift-header .header-inner > nav { display: none; }
-  .gift-menu-button { display: block; }
-  .gift-header .gift-nav-mobile { position: absolute; top: 72px; right: 0; left: 0; display: grid; gap: 0; padding: 8px 20px 18px; background: rgba(31,52,63,.98); }
-  .gift-nav-mobile[hidden] { display: none; }
-  .gift-nav-mobile a { padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,.12); color: white; text-decoration: none; }
-  .future-hero { min-height: auto; }
-  .future-hero-grid { min-height: auto; padding: 65px 0 120px; }
-  .future-copy h1 { font-size: clamp(3.35rem, 16vw, 5rem); }
-  .future-lead { font-size: 1.05rem; }
-  .future-visual { min-height: 430px; }
-  .future-visual figure { width: min(320px, 80%); }
-  .photo-orbit { width: 390px; height: 390px; }
-  .satellite-a { left: 8px; top: 165px; }.satellite-b { right: 2px; top: 180px; }.satellite-c { left: 165px; }
-  .future-stamp { right: 2px; bottom: 8px; width: 145px; height: 145px; }
-  .how-section { padding-top: 90px; }
-  .steps-grid { grid-template-columns: 1fr; }
-  .step-card { min-height: 0; }
-  .gift-showcase { padding: 75px 0 85px; }
-  .gift-grid { grid-template-columns: 1fr; }
-  .gift-card { min-height: 0; }
-  .gift-description { min-height: 0; }
-  .free-gift-panel { grid-template-columns: 1fr; padding: 30px; text-align: center; }
-  .free-gift-icon { margin: auto; }
-  .message-marquee { grid-template-columns: 1fr; }
-  .return-panel { padding: 45px 24px; }
-  .gift-modal { padding: 10px; align-items: end; }
-  .gift-modal-panel { width: 100%; max-height: 92vh; padding: 27px 20px; border-radius: 28px 28px 16px 16px; }
-  .modal-gift-heading { grid-template-columns: 1fr; text-align: center; }
-  .modal-gift-icon { margin: auto; }
-  .amount-presets { grid-template-columns: repeat(3, 1fr); }
-  .modal-form-grid { grid-template-columns: 1fr; }
-  .demo-ribbon { right: 10px; bottom: 10px; left: 10px; text-align: center; }
+function crc16(payload) {
+  let crc = 0xffff;
+  for (let i = 0; i < payload.length; i++) {
+    crc ^= payload.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, "0");
 }
 
-@media (max-width: 430px) {
-  .future-actions { display: grid; }
-  .future-button { width: 100%; }
-  .future-visual { min-height: 390px; }
-  .future-visual figure { width: 280px; }
-  .photo-orbit { width: 340px; height: 340px; }
-  .satellite { width: 37px; height: 37px; }
-  .satellite-a { left: 3px; top: 145px; }.satellite-b { right: -1px; top: 158px; }.satellite-c { left: 145px; }
-  .future-stamp { width: 130px; height: 130px; }
-  .future-stamp strong { font-size: 1rem; }
-  .future-stamp span { width: 95px; }
-  .gift-card { padding: 21px; }
-  .gift-modal-panel { padding: 26px 16px; }
+function buildPixPayload({ key, holder, city, amount, description, txid }) {
+  const pixDescription = sanitizePixText(description).slice(0, 40);
+  const pixTxid = sanitizePixText(txid).replace(/ /g, "").slice(0, 25) || "***";
+  const merchantAccount = tlv(
+    "26",
+    tlv("00", "BR.GOV.BCB.PIX") +
+      tlv("01", key) +
+      (pixDescription ? tlv("02", pixDescription) : "")
+  );
+  const amountField = amount ? tlv("54", Number(amount).toFixed(2)) : "";
+  const additionalData = tlv("62", tlv("05", pixTxid));
+
+  const partial =
+    tlv("00", "01") +
+    merchantAccount +
+    tlv("52", "0000") +
+    tlv("53", "986") +
+    amountField +
+    tlv("58", "BR") +
+    tlv("59", sanitizePixText(holder).slice(0, 25) || "RECEBEDOR") +
+    tlv("60", sanitizePixText(city).slice(0, 15) || "BRASIL") +
+    additionalData +
+    "6304";
+
+  return partial + crc16(partial);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .reveal { opacity: 1; transform: none; }
+function renderPixBox(amount, description) {
+  const pixBox = document.querySelector("#pix-box");
+  const demoNotice = document.querySelector("#demo-notice");
+
+  if (!CONFIG.pixKey.trim()) {
+    pixBox.hidden = true;
+    demoNotice.hidden = false;
+    return;
+  }
+
+  const payload = buildPixPayload({
+    key: CONFIG.pixKey,
+    holder: CONFIG.pixHolder,
+    city: CONFIG.pixCity,
+    amount,
+    description,
+    txid: "PRESENTE" + Date.now().toString().slice(-8)
+  });
+
+  document.querySelector("#pix-code").textContent = payload;
+  document.querySelector("#pix-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
+
+  pixBox.hidden = false;
+  demoNotice.hidden = true;
+  demoNotice.querySelector("strong").textContent = "Presente registrado!";
+  demoNotice.querySelector("p").textContent = "Assim que recebermos seu Pix, seu presente será confirmado por aqui.";
 }
 
-/* QR Code e copia-e-cola do Pix */
-.pix-box { text-align: center; }
-.pix-box-title { text-transform: none !important; font-size: .8rem !important; font-weight: 600; color: var(--ink) !important; }
-#pix-qr { display: block; margin: 10px auto 14px; border-radius: 10px; background: #fff; padding: 8px; }
-.pix-copy-row { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 10px; padding: 8px 10px; }
-.pix-copy-row code {
-  flex: 1; overflow-wrap: anywhere; font-family: "Space Mono", monospace;
-  font-size: .68rem; text-align: left; color: var(--ink);
+const sampleMessages = [
+  { name: "Tripulação da família", message: "Que o futuro de vocês tenha amor de sobra, risadas diárias e uma Lavadora 3000 funcionando perfeitamente." },
+  { name: "Convidados do setor terrestre", message: "Desejamos uma vida inteira de aventuras, parceria e muitos cafés teletransportados na hora certa." },
+  { name: "Central de boas energias", message: "Que essa nova missão seja a mais bonita de todas. Estamos felizes por fazer parte do lançamento!" }
+];
+
+const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+const grid = document.querySelector("#gift-grid");
+const modal = document.querySelector("#gift-modal");
+const formView = document.querySelector("#gift-form-view");
+const successView = document.querySelector("#gift-success");
+const giftForm = document.querySelector("#gift-form");
+const amountInput = document.querySelector("#gift-amount");
+const amountPresets = document.querySelector("#amount-presets");
+const modalTitle = document.querySelector("#gift-modal-title");
+const modalDescription = document.querySelector("#modal-description");
+const modalCategory = document.querySelector("#modal-category");
+const modalIconUse = document.querySelector("#modal-icon use");
+const amountHelper = document.querySelector("#amount-helper");
+const giftIdInput = document.querySelector("#gift-id");
+const messageList = document.querySelector("#message-list");
+const mobileMenuButton = document.querySelector(".gift-menu-button");
+const mobileNav = document.querySelector("#gift-nav-mobile");
+let lastFocusedElement = null;
+let activeGift = null;
+let gifts = [];
+
+// ------------------------------
+// Busca dos presentes no Supabase
+// ------------------------------
+async function fetchGifts() {
+  const { data, error } = await db
+    .from("presentes")
+    .select("*")
+    .eq("status", "ativo")
+    .order("ordem", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao buscar presentes:", error);
+    grid.innerHTML = '<p class="empty-messages">Não foi possível carregar os presentes agora. Tenta recarregar a página.</p>';
+    return;
+  }
+
+  // Traduz os campos do banco (nome, descricao, categoria, icone, valor_total, valor_arrecadado)
+  // para o formato que o restante do código já espera (name, description, category, icon, goal, raised).
+  gifts = data.map(row => ({
+    id: row.id,
+    category: row.categoria,
+    name: row.nome,
+    description: row.descricao,
+    icon: row.icone || "icon-spark",
+    goal: Number(row.valor_total),
+    raised: Number(row.valor_arrecadado)
+  }));
 }
-.pix-copy-row button {
-  margin: 0 !important; flex-shrink: 0; background: var(--teal) !important; color: #fff !important;
-  padding: 6px 12px; border-radius: 8px !important; text-transform: none !important;
+
+function getRaised(gift) {
+  return gift.raised;
 }
-.pix-box-note { margin-top: 10px !important; font-size: .72rem !important; text-transform: none !important; }
+
+function percentage(gift) {
+  return Math.min(100, Math.round((getRaised(gift) / gift.goal) * 100));
+}
+
+function createGiftCard(gift) {
+  const raised = getRaised(gift);
+  const percent = percentage(gift);
+  const complete = percent >= 100;
+  const card = document.createElement("article");
+  card.className = `gift-card reveal visible${complete ? " complete" : ""}`;
+  card.dataset.category = gift.category;
+  card.dataset.giftId = gift.id;
+
+  const top = document.createElement("div");
+  top.className = "card-topline";
+  if (complete) {
+    const badge = document.createElement("span");
+    badge.className = "complete-badge";
+    badge.textContent = "Completo";
+    top.append(badge);
+  }
+
+  const progress = document.createElement("div");
+  progress.className = "orbital-progress";
+  progress.style.setProperty("--progress", `${percent * 3.6}deg`);
+  progress.setAttribute("aria-label", `${percent}% do objetivo alcançado`);
+
+  const dot = document.createElement("span");
+  dot.className = "orbit-dot";
+  const icon = document.createElement("div");
+  icon.className = "gift-icon";
+  icon.innerHTML = `<svg aria-hidden="true"><use href="#${gift.icon}"></use></svg>`;
+  progress.append(dot, icon);
+
+  const name = document.createElement("h3");
+  name.textContent = gift.name;
+  const description = document.createElement("p");
+  description.className = "gift-description";
+  description.textContent = gift.description;
+
+  const progressCopy = document.createElement("div");
+  progressCopy.className = "progress-copy";
+  const values = document.createElement("div");
+  const valuesLabel = document.createElement("span");
+  valuesLabel.textContent = "Já arrecadado";
+  const valuesStrong = document.createElement("strong");
+  valuesStrong.textContent = `${money.format(Math.min(raised, gift.goal))} de ${money.format(gift.goal)}`;
+  values.append(valuesLabel, valuesStrong);
+  const percentText = document.createElement("strong");
+  percentText.textContent = `${percent}%`;
+  progressCopy.append(values, percentText);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = complete ? "Celebrar esta missão" : "Presentear com esta invenção";
+  button.addEventListener("click", () => openGiftModal(gift));
+
+  card.append(top, progress, name, description, progressCopy, button);
+  return card;
+}
+
+function observeReveals() {
+  const items = document.querySelectorAll(".reveal:not(.visible)");
+  if (!("IntersectionObserver" in window)) {
+    items.forEach((item) => item.classList.add("visible"));
+    return;
+  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: .12 });
+  items.forEach((item) => observer.observe(item));
+}
+
+function renderGifts() {
+  grid.innerHTML = "";
+  if (!gifts.length) {
+    grid.innerHTML = '<p class="empty-messages">Nenhum presente cadastrado no momento.</p>';
+    return;
+  }
+  gifts.forEach((gift) => {
+    grid.append(createGiftCard(gift));
+  });
+}
+
+// ------------------------------
+// Busca dos recados confirmados no Supabase
+// ------------------------------
+async function fetchMessages() {
+  const { data, error } = await db
+    .from("contribuicoes")
+    .select("nome_convidado, recado")
+    .eq("status", "confirmado")
+    .not("recado", "is", null)
+    .order("confirmado_em", { ascending: false })
+    .limit(6);
+
+  if (error) {
+    console.error("Erro ao buscar recados:", error);
+    return [];
+  }
+
+  return data.map(item => ({ name: item.nome_convidado, message: item.recado }));
+}
+
+async function renderMessages() {
+  const confirmedMessages = await fetchMessages();
+  // Enquanto não há recados confirmados suficientes, completa com as mensagens de exemplo
+  const messages = confirmedMessages.length >= 3
+    ? confirmedMessages
+    : [...confirmedMessages, ...sampleMessages].slice(0, 6);
+
+  messageList.innerHTML = "";
+  if (!messages.length) {
+    messageList.innerHTML = '<p class="empty-messages">Os primeiros recados aparecerão aqui.</p>';
+    return;
+  }
+  messages.forEach((item) => {
+    const card = document.createElement("article");
+    card.className = "message-card";
+    const quote = document.createElement("blockquote");
+    quote.textContent = `"${item.message}"`;
+    const footer = document.createElement("footer");
+    footer.textContent = item.name;
+    card.append(quote, footer);
+    messageList.append(card);
+  });
+}
+
+function setPresetButtons(gift) {
+  const isFree = gift.id === "contribuicao-livre";
+  const remaining = Math.max(0, gift.goal - getRaised(gift));
+  const values = isFree
+    ? [50, 100, 150, 250, 500]
+    : [50, 100, 150, 250, Math.min(Math.max(remaining, 10), 500)];
+  const uniqueValues = [...new Set(values)].filter((value) => value > 0);
+  amountPresets.innerHTML = "";
+  uniqueValues.forEach((value, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = money.format(value);
+    button.dataset.amount = String(value);
+    if (index === 1 || (uniqueValues.length === 1 && index === 0)) button.classList.add("active");
+    button.addEventListener("click", () => {
+      amountPresets.querySelectorAll("button").forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      amountInput.value = value;
+    });
+    amountPresets.append(button);
+  });
+  amountInput.value = uniqueValues[1] || uniqueValues[0] || 50;
+  amountInput.removeAttribute("max");
+  amountHelper.textContent = isFree
+    ? "Escolha qualquer valor a partir de R$ 10. Nós direcionaremos a contribuição para uma das próximas missões."
+    : remaining > 0
+      ? `Faltam ${money.format(remaining)} para esta missão chegar ao objetivo.`
+      : "Esta missão já chegou ao objetivo, mas você ainda pode celebrar com uma contribuição simbólica.";
+}
+
+function openGiftModal(gift, isFree = false) {
+  lastFocusedElement = document.activeElement;
+  activeGift = isFree ? {
+    id: "contribuicao-livre",
+    category: "festa",
+    name: "Portal de Contribuição Livre",
+    description: "Você escolhe o valor e nós direcionamos o impulso para uma das nossas próximas missões.",
+    icon: "icon-spark",
+    goal: 999999,
+    raised: 0
+  } : gift;
+
+  formView.hidden = false;
+  successView.hidden = true;
+  giftForm.reset();
+  giftIdInput.value = activeGift.id;
+  modalTitle.textContent = activeGift.name;
+  modalDescription.textContent = activeGift.description;
+  modalCategory.hidden = true;
+  modalIconUse.setAttribute("href", `#${activeGift.icon}`);
+  setPresetButtons(activeGift);
+
+  modal.hidden = false;
+  document.body.classList.add("modal-open");
+  window.setTimeout(() => document.querySelector("#giver-name").focus(), 40);
+}
+
+function closeGiftModal() {
+  modal.hidden = true;
+  document.body.classList.remove("modal-open");
+  activeGift = null;
+  if (lastFocusedElement) lastFocusedElement.focus();
+}
+
+// ------------------------------
+// Grava a contribuição de verdade na tabela "contribuicoes", como pendente
+// ------------------------------
+async function saveContribution(giftId, amount, name, message) {
+  const { error } = await db.from("contribuicoes").insert({
+    presente_id: giftId === "contribuicao-livre" ? null : giftId,
+    nome_convidado: name,
+    valor: amount,
+    recado: message || null,
+    status: "pendente"
+  });
+  if (error) {
+    console.error("Erro ao registrar contribuição:", error);
+    return false;
+  }
+  return true;
+}
+
+function showSuccess({ name, amount, message }) {
+  const summary = document.querySelector("#gift-summary");
+  summary.innerHTML = "";
+  const rows = [
+    ["Presente", activeGift.name],
+    ["Valor", money.format(amount)],
+    ["De", name]
+  ];
+  if (message) rows.push(["Recado", message]);
+  rows.forEach(([label, value]) => {
+    const row = document.createElement("p");
+    const labelNode = document.createElement("span");
+    labelNode.textContent = label;
+    const valueNode = document.createElement("strong");
+    valueNode.textContent = value;
+    row.append(labelNode, valueNode);
+    summary.append(row);
+  });
+
+  renderPixBox(amount, activeGift.name);
+
+  const whatsappText = [
+    "Olá, Victor e Luana! 🚀",
+    "",
+    `Quero presentear vocês com: ${activeGift.name}`,
+    `Valor: ${money.format(amount)}`,
+    `Nome: ${name}`,
+    message ? `Recado: ${message}` : ""
+  ].filter(Boolean).join("\n");
+  document.querySelector("#whatsapp-gift").href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(whatsappText)}`;
+
+  formView.hidden = true;
+  successView.hidden = false;
+  successView.querySelector("h2").focus?.();
+}
+
+document.querySelector("[data-open-free-gift]").addEventListener("click", () => openGiftModal(null, true));
+document.querySelectorAll("[data-close-gift]").forEach((button) => button.addEventListener("click", closeGiftModal));
+
+giftForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const data = new FormData(giftForm);
+  const amount = Number(data.get("amount"));
+  const name = String(data.get("giverName") || "").trim();
+  const message = String(data.get("message") || "").trim();
+
+  if (!Number.isFinite(amount) || amount < 10) {
+    amountInput.setCustomValidity("Informe um valor a partir de R$ 10.");
+    amountInput.reportValidity();
+    return;
+  }
+  amountInput.setCustomValidity("");
+
+  const submitButton = giftForm.querySelector('button[type="submit"]');
+  submitButton.disabled = true;
+  submitButton.textContent = "Enviando...";
+
+  const ok = await saveContribution(activeGift.id, amount, name, message);
+
+  submitButton.disabled = false;
+  submitButton.textContent = "Preparar meu presente";
+
+  if (!ok) {
+    amountHelper.textContent = "Algo deu errado ao registrar. Tenta de novo em instantes.";
+    return;
+  }
+
+  showSuccess({ name, amount, message });
+});
+
+amountInput.addEventListener("input", () => {
+  amountInput.setCustomValidity("");
+  amountPresets.querySelectorAll("button").forEach((item) => item.classList.toggle("active", Number(item.dataset.amount) === Number(amountInput.value)));
+});
+
+document.querySelector("#copy-pix").addEventListener("click", async (event) => {
+  const code = document.querySelector("#pix-code").textContent;
+  if (!code) return;
+  try {
+    await navigator.clipboard.writeText(code);
+    event.currentTarget.textContent = "Código copiado!";
+    setTimeout(() => { event.currentTarget.textContent = "Copiar código"; }, 1800);
+  } catch {
+    event.currentTarget.textContent = "Copie manualmente";
+  }
+});
+
+modal.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeGiftModal();
+});
+
+mobileMenuButton.addEventListener("click", () => {
+  const expanded = mobileMenuButton.getAttribute("aria-expanded") === "true";
+  mobileMenuButton.setAttribute("aria-expanded", String(!expanded));
+  mobileNav.hidden = expanded;
+});
+
+mobileNav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
+  mobileNav.hidden = true;
+  mobileMenuButton.setAttribute("aria-expanded", "false");
+}));
+
+// ------------------------------
+// Inicialização
+// ------------------------------
+async function init() {
+  await fetchGifts();
+  renderGifts();
+  await renderMessages();
+  observeReveals();
+}
+
+init();
