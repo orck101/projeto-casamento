@@ -33,6 +33,7 @@ function showLogin() {
 function showPanel() {
   loginView.style.display = "none";
   panelView.style.display = "block";
+  loadPending();
   loadGifts();
   loadConfirmations();
 }
@@ -294,5 +295,78 @@ exportNamesButton.addEventListener("click", () => {
   a.click();
   URL.revokeObjectURL(url);
 });
+
+// ------------------------------
+// Pagamentos pendentes
+// ------------------------------
+const pendingList = document.querySelector("#pending-list");
+
+async function loadPending() {
+  pendingList.innerHTML = '<p class="empty">Carregando...</p>';
+
+  const { data, error } = await db
+    .from("contribuicoes")
+    .select("*, presentes(nome)")
+    .eq("status", "pendente")
+    .order("criado_em", { ascending: true });
+
+  if (error) {
+    pendingList.innerHTML = '<p class="empty">Não foi possível carregar os pagamentos pendentes.</p>';
+    console.error(error);
+    return;
+  }
+
+  renderPending(data);
+}
+
+function renderPending(rows) {
+  pendingList.innerHTML = "";
+
+  if (!rows.length) {
+    pendingList.innerHTML = '<p class="empty">Nenhum pagamento pendente no momento. Tudo em dia!</p>';
+    return;
+  }
+
+  rows.forEach((row) => {
+    const date = row.criado_em ? new Date(row.criado_em).toLocaleString("pt-BR") : "";
+    const giftName = row.presentes ? row.presentes.nome : "Contribuição livre";
+
+    const card = document.createElement("div");
+    card.className = "pending-row";
+    card.innerHTML = `
+      <div class="pending-info">
+        <div class="pending-gift">${escapeHtml(giftName)}</div>
+        <strong>${escapeHtml(row.nome_convidado)} — ${money.format(Number(row.valor))}</strong>
+        <div class="pending-meta">${date}</div>
+        ${row.recado ? `<div class="pending-message">"${escapeHtml(row.recado)}"</div>` : ""}
+      </div>
+      <div class="pending-actions">
+        <button type="button" class="btn-ignore" data-action="ignore">Ignorar</button>
+        <button type="button" class="btn-confirm" data-action="confirm">Confirmar Pix recebido</button>
+      </div>
+    `;
+
+    card.querySelector('[data-action="confirm"]').addEventListener("click", () => updatePendingStatus(row.id, "confirmado"));
+    card.querySelector('[data-action="ignore"]').addEventListener("click", () => {
+      if (confirm("Ignorar este pedido? Ele sai da fila de pendentes sem somar valor ao presente.")) {
+        updatePendingStatus(row.id, "cancelado");
+      }
+    });
+
+    pendingList.append(card);
+  });
+}
+
+async function updatePendingStatus(id, status) {
+  const { error } = await db.from("contribuicoes").update({ status }).eq("id", id);
+  if (error) {
+    alert("Erro ao atualizar. Tenta de novo.");
+    console.error(error);
+    return;
+  }
+  // Confirmar dispara um gatilho no banco que já soma o valor ao presente automaticamente.
+  loadPending();
+  loadGifts();
+}
 
 checkSession();
