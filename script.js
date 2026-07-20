@@ -44,6 +44,8 @@ let previousFocus = null;
 function openModal() {
   previousFocus = document.activeElement;
   modal.hidden = false;
+  $('#rsvp-form').hidden = false;
+  $('#rsvp-success').hidden = true;
   document.body.classList.add('modal-open');
   setTimeout(() => firstInput.focus(), 40);
 }
@@ -117,12 +119,22 @@ $('#rsvp-form').addEventListener('submit', async event => {
   }
 
   const firstName = (data.responsibleName || '').trim().split(' ')[0] || '';
-  const thankYouMessage = attending
-    ? `Presença confirmada! Obrigado, ${firstName} — mal podemos esperar para celebrar com vocês. 💛`
-    : `Recebemos sua resposta, ${firstName}. Sentiremos sua falta, mas agradecemos por nos avisar! 💛`;
+  const successTitle = $('#rsvp-success-title');
+  const successDetail = $('#rsvp-success-detail');
 
-  showToast(thankYouMessage);
-  closeModal();
+  if (attending) {
+    const attendeeNames = (data.guestNames || '').trim();
+    successTitle.textContent = `Obrigado por confirmar, ${firstName}!`;
+    successDetail.textContent = attendeeNames
+      ? `Você confirmou a presença de ${attendeeNames}. Mal podemos esperar para celebrar com vocês!`
+      : `Sua presença está confirmada. Mal podemos esperar para celebrar com você!`;
+  } else {
+    successTitle.textContent = `Obrigado por avisar, ${firstName}.`;
+    successDetail.textContent = `Sentiremos sua falta, mas agradecemos demais por nos contar. Você continua fazendo parte dessa história.`;
+  }
+
+  $('#rsvp-form').hidden = true;
+  $('#rsvp-success').hidden = false;
   event.currentTarget.reset();
   $('input[name="attendance"][value="Sim"]').checked = true;
   guestFields.hidden = false;
