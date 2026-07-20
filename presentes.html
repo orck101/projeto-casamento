@@ -276,9 +276,13 @@
           <p>Nenhuma cobrança foi realizada. Nesta etapa, o presente é registrado apenas neste navegador para revisão visual do site.</p>
         </div>
         <div class="pix-box" id="pix-box" hidden>
-          <p>Chave Pix</p>
-          <strong id="pix-key"></strong>
-          <button type="button" id="copy-pix">Copiar chave</button>
+          <p class="pix-box-title">Escaneie ou copie o código para pagar</p>
+          <img id="pix-qr" alt="QR Code Pix" width="220" height="220">
+          <div class="pix-copy-row">
+            <code id="pix-code"></code>
+            <button type="button" id="copy-pix">Copiar código</button>
+          </div>
+          <p class="pix-box-note">Abra o app do seu banco, escolha Pix Copia e Cola (ou aponte a câmera para o QR Code).</p>
         </div>
         <div class="success-actions">
           <a class="future-button primary wide" id="whatsapp-gift" href="#" target="_blank" rel="noopener noreferrer">Enviar intenção pelo WhatsApp</a>
