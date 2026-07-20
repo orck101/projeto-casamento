@@ -2,8 +2,9 @@
 
 const CONFIG = {
   whatsapp: "5512991360571",
-  pixKey: "", // Insira a chave Pix para ativar a exibição no resumo final.
-  pixHolder: "Victor & Luana"
+  pixKey: "2ef918ce-ff4f-4ea5-bb29-b11af23d4543",
+  pixHolder: "Victor Hugo Freitas", // Nome do titular (28 caracteres no nome completo excede o limite de 25 do Pix, então usamos uma versão enxuta)
+  pixCity: "Taubate"
 };
 
 const categoryLabels = {
@@ -14,6 +15,81 @@ const categoryLabels = {
 
 // Cliente Supabase (usa as chaves definidas em config.js)
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ------------------------------
+// Geração do código Pix Copia e Cola (padrão EMV do Banco Central)
+// ------------------------------
+function sanitizePixText(value) {
+  return String(value)
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9 ]/g, "")
+    .toUpperCase()
+    .trim();
+}
+
+function tlv(id, value) {
+  const length = String(value.length).padStart(2, "0");
+  return `${id}${length}${value}`;
+}
+
+function crc16(payload) {
+  let crc = 0xffff;
+  for (let i = 0; i < payload.length; i++) {
+    crc ^= payload.charCodeAt(i) << 8;
+    for (let j = 0; j < 8; j++) {
+      crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff;
+    }
+  }
+  return crc.toString(16).toUpperCase().padStart(4, "0");
+}
+
+function buildPixPayload({ key, holder, city, amount, description, txid }) {
+  const merchantAccount = tlv("26", tlv("00", "BR.GOV.BCB.PIX") + tlv("01", key) + (description ? tlv("02", description.slice(0, 40)) : ""));
+  const amountField = amount ? tlv("54", Number(amount).toFixed(2)) : "";
+  const additionalData = tlv("62", tlv("05", (txid || "***").slice(0, 25)));
+
+  const partial =
+    tlv("00", "01") +
+    merchantAccount +
+    tlv("52", "0000") +
+    tlv("53", "986") +
+    amountField +
+    tlv("58", "BR") +
+    tlv("59", sanitizePixText(holder).slice(0, 25) || "RECEBEDOR") +
+    tlv("60", sanitizePixText(city).slice(0, 15) || "BRASIL") +
+    additionalData +
+    "6304";
+
+  return partial + crc16(partial);
+}
+
+function renderPixBox(amount, description) {
+  const pixBox = document.querySelector("#pix-box");
+  const demoNotice = document.querySelector("#demo-notice");
+
+  if (!CONFIG.pixKey.trim()) {
+    pixBox.hidden = true;
+    demoNotice.hidden = false;
+    return;
+  }
+
+  const payload = buildPixPayload({
+    key: CONFIG.pixKey,
+    holder: CONFIG.pixHolder,
+    city: CONFIG.pixCity,
+    amount,
+    description,
+    txid: "PRESENTE" + Date.now().toString().slice(-8)
+  });
+
+  document.querySelector("#pix-code").textContent = payload;
+  document.querySelector("#pix-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
+
+  pixBox.hidden = false;
+  demoNotice.hidden = true;
+  demoNotice.querySelector("strong").textContent = "Presente registrado!";
+  demoNotice.querySelector("p").textContent = "Assim que recebermos seu Pix, seu presente será confirmado por aqui.";
+}
 
 const sampleMessages = [
   { name: "Tripulação da família", message: "Que o futuro de vocês tenha amor de sobra, risadas diárias e uma Lavadora 3000 funcionando perfeitamente." },
@@ -310,18 +386,7 @@ function showSuccess({ name, amount, message }) {
     summary.append(row);
   });
 
-  const pixBox = document.querySelector("#pix-box");
-  const demoNotice = document.querySelector("#demo-notice");
-  if (CONFIG.pixKey.trim()) {
-    document.querySelector("#pix-key").textContent = CONFIG.pixKey;
-    pixBox.hidden = false;
-    demoNotice.hidden = true;
-  } else {
-    pixBox.hidden = true;
-    demoNotice.hidden = false;
-    demoNotice.querySelector("strong").textContent = "Presente registrado!";
-    demoNotice.querySelector("p").textContent = "Assim que recebermos seu Pix, seu presente será confirmado por aqui.";
-  }
+  renderPixBox(amount, activeGift.name);
 
   const whatsappText = [
     "Olá, Victor e Luana! 🚀",
@@ -378,11 +443,12 @@ amountInput.addEventListener("input", () => {
 });
 
 document.querySelector("#copy-pix").addEventListener("click", async (event) => {
-  if (!CONFIG.pixKey) return;
+  const code = document.querySelector("#pix-code").textContent;
+  if (!code) return;
   try {
-    await navigator.clipboard.writeText(CONFIG.pixKey);
-    event.currentTarget.textContent = "Chave copiada";
-    setTimeout(() => { event.currentTarget.textContent = "Copiar chave"; }, 1800);
+    await navigator.clipboard.writeText(code);
+    event.currentTarget.textContent = "Código copiado!";
+    setTimeout(() => { event.currentTarget.textContent = "Copiar código"; }, 1800);
   } catch {
     event.currentTarget.textContent = "Copie manualmente";
   }
