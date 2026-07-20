@@ -98,12 +98,6 @@ function renderPixBox(amount, description) {
   paymentNotice.hidden = true;
 }
 
-const sampleMessages = [
-  { name: "Tripulação da família", message: "Que o futuro de vocês tenha amor de sobra, risadas diárias e uma Lavadora 3000 funcionando perfeitamente." },
-  { name: "Convidados do setor terrestre", message: "Desejamos uma vida inteira de aventuras, parceria e muitos cafés teletransportados na hora certa." },
-  { name: "Central de boas energias", message: "Que essa nova missão seja a mais bonita de todas. Estamos felizes por fazer parte do lançamento!" }
-];
-
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 const grid = document.querySelector("#gift-grid");
@@ -269,15 +263,11 @@ async function fetchMessages() {
 }
 
 async function renderMessages() {
-  const confirmedMessages = await fetchMessages();
-  // Enquanto não há recados confirmados suficientes, completa com as mensagens de exemplo
-  const messages = confirmedMessages.length >= 3
-    ? confirmedMessages
-    : [...confirmedMessages, ...sampleMessages].slice(0, 6);
+  const messages = await fetchMessages();
 
   messageList.innerHTML = "";
   if (!messages.length) {
-    messageList.innerHTML = '<p class="empty-messages">Os primeiros recados aparecerão aqui.</p>';
+    messageList.innerHTML = '<p class="empty-messages">Os primeiros recados dos nossos convidados aparecerão aqui.</p>';
     return;
   }
   messages.forEach((item) => {
