@@ -78,6 +78,31 @@
 
     #panel-view { display: none; }
     .empty { color: rgba(26,31,61,.5); padding: 2rem 0; text-align: center; }
+
+    .section-divider { height: 1px; background: var(--border); margin: 2.5rem 0 1.75rem; }
+    h2 { font-size: 1.3rem; margin: 0 0 .25rem; }
+
+    /* Lista de RSVP */
+    .rsvp-row {
+      background: var(--card); border-radius: 14px; padding: 1rem 1.25rem;
+      margin-bottom: .6rem; border: 1px solid var(--border); cursor: pointer;
+    }
+    .rsvp-row-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; flex-wrap: wrap; }
+    .rsvp-name { font-weight: 600; }
+    .rsvp-meta { font-size: .82rem; color: rgba(26,31,61,.6); margin-top: .2rem; }
+    .badge {
+      font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 99px;
+      white-space: nowrap;
+    }
+    .badge-yes { background: #e6f4f1; color: var(--accent-dark); }
+    .badge-no { background: #fdecea; color: var(--danger); }
+    .rsvp-details {
+      display: none; margin-top: .85rem; padding-top: .85rem;
+      border-top: 1px dashed var(--border); font-size: .9rem; line-height: 1.6;
+    }
+    .rsvp-details.open { display: block; }
+    .rsvp-details p { margin: 0 0 .4rem; }
+    .rsvp-details strong { display: inline-block; min-width: 130px; }
   </style>
 </head>
 <body>
@@ -112,6 +137,20 @@
       <div class="summary" id="summary"></div>
 
       <div id="gift-list"></div>
+
+      <div class="section-divider"></div>
+
+      <div class="topbar">
+        <div>
+          <h2>Confirmações de presença</h2>
+          <p class="subtitle">Clique em uma pessoa para ver quem ela levou</p>
+        </div>
+        <button class="logout-btn" id="export-names-button">Baixar lista de nomes</button>
+      </div>
+
+      <div class="summary" id="rsvp-summary"></div>
+
+      <div id="rsvp-list"></div>
     </div>
 
   </div>
