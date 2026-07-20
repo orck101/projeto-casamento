@@ -91,10 +91,6 @@ function createGiftCard(gift) {
 
   const top = document.createElement("div");
   top.className = "card-topline";
-  const category = document.createElement("p");
-  category.className = "card-category";
-  category.textContent = categoryLabels[gift.category] || gift.category;
-  top.append(category);
   if (complete) {
     const badge = document.createElement("span");
     badge.className = "complete-badge";
@@ -158,16 +154,14 @@ function observeReveals() {
   items.forEach((item) => observer.observe(item));
 }
 
-function renderGifts(category = "all") {
+function renderGifts() {
   grid.innerHTML = "";
   if (!gifts.length) {
     grid.innerHTML = '<p class="empty-messages">Nenhum presente cadastrado no momento.</p>';
     return;
   }
   gifts.forEach((gift) => {
-    const card = createGiftCard(gift);
-    if (category !== "all" && gift.category !== category) card.classList.add("hidden");
-    grid.append(card);
+    grid.append(createGiftCard(gift));
   });
 }
 
@@ -263,7 +257,7 @@ function openGiftModal(gift, isFree = false) {
   giftIdInput.value = activeGift.id;
   modalTitle.textContent = activeGift.name;
   modalDescription.textContent = activeGift.description;
-  modalCategory.textContent = isFree ? "Contribuição livre" : (categoryLabels[activeGift.category] || activeGift.category);
+  modalCategory.hidden = true;
   modalIconUse.setAttribute("href", `#${activeGift.icon}`);
   setPresetButtons(activeGift);
 
@@ -343,18 +337,6 @@ function showSuccess({ name, amount, message }) {
   successView.hidden = false;
   successView.querySelector("h2").focus?.();
 }
-
-document.querySelectorAll(".category-tab").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".category-tab").forEach((item) => {
-      item.classList.remove("active");
-      item.setAttribute("aria-selected", "false");
-    });
-    button.classList.add("active");
-    button.setAttribute("aria-selected", "true");
-    renderGifts(button.dataset.category);
-  });
-});
 
 document.querySelector("[data-open-free-gift]").addEventListener("click", () => openGiftModal(null, true));
 document.querySelectorAll("[data-close-gift]").forEach((button) => button.addEventListener("click", closeGiftModal));
