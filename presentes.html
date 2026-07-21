@@ -260,37 +260,39 @@
           </div>
 
           <div class="modal-actions">
-            <button class="future-button primary wide" type="submit">Gerar meu Pix</button>
-            <p>O pagamento só será concluído quando você confirmar no aplicativo do seu banco.</p>
+            <button class="future-button primary wide" type="submit">Preparar meu presente</button>
+            <p>Você poderá revisar tudo antes de concluir.</p>
           </div>
         </form>
       </div>
 
       <div class="gift-success" id="gift-success" hidden>
         <div class="success-orbit"><svg><use href="#icon-rocket"></use></svg></div>
-        <p class="future-kicker">Pagamento via Pix</p>
-        <h2>Finalize seu presente com segurança</h2>
+        <p class="future-kicker">Missão preparada</p>
+        <h2>Seu presente está pronto para decolar</h2>
         <div class="gift-summary" id="gift-summary"></div>
-        <div class="payment-notice" id="payment-notice" hidden>
-          <strong>Pagamento temporariamente indisponível</strong>
-          <p>O Pix não pôde ser gerado agora. Avise-nos pelo WhatsApp para receber os dados de pagamento com segurança.</p>
+        <div class="demo-notice" id="demo-notice">
+          <strong>Versão de demonstração</strong>
+          <p>Nenhuma cobrança foi realizada. Nesta etapa, o presente é registrado apenas neste navegador para revisão visual do site.</p>
         </div>
         <div class="pix-box" id="pix-box" hidden>
-          <p class="pix-box-title">Pague com segurança pelo aplicativo do seu banco</p>
+          <p class="pix-box-title">Escaneie ou copie o código para pagar</p>
           <img id="pix-qr" alt="QR Code Pix" width="220" height="220">
           <div class="pix-copy-row">
             <code id="pix-code"></code>
             <button type="button" id="copy-pix">Copiar código</button>
           </div>
-          <p class="pix-box-note">Use o Pix Copia e Cola ou escaneie o QR Code. Antes de confirmar, confira o titular Victor Hugo N Freitas e o valor escolhido. Este site nunca solicita senha ou dados bancários.</p>
+          <p class="pix-box-note">Abra o app do seu banco, escolha Pix Copia e Cola (ou aponte a câmera para o QR Code).</p>
         </div>
         <div class="success-actions">
-          <a class="future-button primary wide" id="whatsapp-gift" href="#" target="_blank" rel="noopener noreferrer">Avisar os noivos pelo WhatsApp</a>
+          <a class="future-button primary wide" id="whatsapp-gift" href="#" target="_blank" rel="noopener noreferrer">Enviar intenção pelo WhatsApp</a>
           <button class="future-button text-only" type="button" data-close-gift>Continuar explorando</button>
         </div>
       </div>
     </div>
   </div>
+
+  <div class="demo-ribbon" role="note">Protótipo visual · pagamentos ainda não conectados</div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>

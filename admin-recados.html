@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Moderação de recados — Victor & Luana</title>
+  <style>
+    :root { --bg:#f4efe5; --card:#fff; --ink:#1e2b33; --muted:#68757b; --accent:#1b7a72; --danger:#b44236; --line:rgba(30,43,51,.13); }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Arial,sans-serif; }
+    main { width:min(980px,calc(100% - 32px)); margin:0 auto; padding:40px 0 70px; }
+    h1 { margin:0 0 8px; }
+    .intro { color:var(--muted); margin:0 0 28px; }
+    .login,.toolbar,.card { background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 12px 35px rgba(30,43,51,.06); }
+    .login { max-width:420px; padding:24px; }
+    label { display:grid; gap:7px; font-size:.8rem; font-weight:700; }
+    input { width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:10px; font:inherit; }
+    button,a.button { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:10px 15px; border:0; border-radius:999px; background:var(--accent); color:#fff; font-weight:700; text-decoration:none; cursor:pointer; }
+    button.secondary,a.secondary { background:#fff; color:var(--ink); border:1px solid var(--line); }
+    .login form { display:grid; gap:14px; }
+    .error { color:var(--danger); min-height:1.2em; }
+    #panel[hidden],#login[hidden] { display:none; }
+    .toolbar { display:flex; justify-content:space-between; gap:18px; align-items:center; padding:18px 20px; margin-bottom:24px; }
+    .toolbar-actions { display:flex; flex-wrap:wrap; gap:8px; }
+    .filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+    .filters button.active { background:var(--ink); }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+    .card { padding:20px; display:grid; gap:13px; }
+    .meta { display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; }
+    .name { font-size:1.05rem; font-weight:800; }
+    blockquote { margin:0; font-family:Georgia,serif; font-size:1.15rem; line-height:1.55; }
+    .status { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:12px; border-top:1px solid var(--line); }
+    .status label { display:flex; align-items:center; gap:9px; font-size:.85rem; cursor:pointer; }
+    .status input { width:auto; }
+    .feedback { color:var(--muted); font-size:.75rem; min-height:1em; }
+    .empty { grid-column:1/-1; padding:50px; text-align:center; color:var(--muted); background:var(--card); border-radius:16px; }
+    @media(max-width:700px){ .grid{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.toolbar-actions{width:100%}.toolbar-actions>*{flex:1} }
+  </style>
+</head>
+<body>
+<main>
+  <section id="login" class="login">
+    <h1>Moderação de recados</h1>
+    <p class="intro">Entre com o mesmo usuário do painel administrativo.</p>
+    <form id="login-form">
+      <label>E-mail<input id="email" type="email" autocomplete="username" required></label>
+      <label>Senha<input id="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Entrar</button>
+      <p id="login-error" class="error"></p>
+    </form>
+  </section>
+
+  <section id="panel" hidden>
+    <div class="toolbar">
+      <div><h1>Mensagens para o casal</h1><p class="intro" style="margin:0">Aprove ou retire recados das duas páginas.</p></div>
+      <div class="toolbar-actions"><a class="button secondary" href="admin.html">Painel principal</a><button class="secondary" id="logout">Sair</button></div>
+    </div>
+    <div class="filters">
+      <button class="active" data-filter="todos">Todos</button>
+      <button data-filter="confirmacao">Confirmações</button>
+      <button data-filter="presente">Presentes</button>
+      <button data-filter="publicados">Publicados</button>
+      <button data-filter="pendentes">Não publicados</button>
+    </div>
+    <div id="list" class="grid"></div>
+  </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+'use strict';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const login = document.querySelector('#login');
+const panel = document.querySelector('#panel');
+const list = document.querySelector('#list');
+let rows = [];
+let activeFilter = 'todos';
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function checkSession(){ const {data:{session}}=await db.auth.getSession(); session ? showPanel() : showLogin(); }
+function showLogin(){ login.hidden=false; panel.hidden=true; }
+async function showPanel(){ login.hidden=true; panel.hidden=false; await loadMessages(); }
+
+document.querySelector('#login-form').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const errorNode=document.querySelector('#login-error'); errorNode.textContent='';
+  const {error}=await db.auth.signInWithPassword({email:document.querySelector('#email').value.trim(),password:document.querySelector('#password').value});
+  if(error){ errorNode.textContent='E-mail ou senha incorretos.'; return; }
+  showPanel();
+});
+document.querySelector('#logout').addEventListener('click',async()=>{ await db.auth.signOut(); showLogin(); });
+
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
+  activeFilter=button.dataset.filter;
+  document.querySelectorAll('[data-filter]').forEach(item=>item.classList.toggle('active',item===button));
+  render();
+}));
+
+async function loadMessages(){
+  list.innerHTML='<p class="empty">Carregando...</p>';
+  const [confirmacoes,contribuicoes]=await Promise.all([
+    db.from('confirmacoes').select('id,nome_responsavel,recado,exibir_recado,criado_em').not('recado','is',null).order('criado_em',{ascending:false}),
+    db.from('contribuicoes').select('id,nome_convidado,recado,exibir_recado,criado_em,status').not('recado','is',null).order('criado_em',{ascending:false})
+  ]);
+  if(confirmacoes.error || contribuicoes.error){ console.error(confirmacoes.error||contribuicoes.error); list.innerHTML='<p class="empty">Não foi possível carregar os recados.</p>'; return; }
+  rows=[
+    ...(confirmacoes.data||[]).filter(r=>String(r.recado||'').trim()).map(r=>({id:r.id,table:'confirmacoes',origin:'confirmacao',name:r.nome_responsavel,message:r.recado,visible:Boolean(r.exibir_recado),createdAt:r.criado_em,eligible:true})),
+    ...(contribuicoes.data||[]).filter(r=>String(r.recado||'').trim()).map(r=>({id:r.id,table:'contribuicoes',origin:'presente',name:r.nome_convidado,message:r.recado,visible:Boolean(r.exibir_recado),createdAt:r.criado_em,eligible:r.status==='confirmado',status:r.status}))
+  ].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  render();
+}
+
+function render(){
+  const filtered=rows.filter(row=>{
+    if(activeFilter==='todos') return true;
+    if(activeFilter==='publicados') return row.visible;
+    if(activeFilter==='pendentes') return !row.visible;
+    return row.origin===activeFilter;
+  });
+  list.innerHTML='';
+  if(!filtered.length){ list.innerHTML='<p class="empty">Nenhum recado neste filtro.</p>'; return; }
+  filtered.forEach(row=>{
+    const card=document.createElement('article'); card.className='card';
+    const date=row.createdAt?new Date(row.createdAt).toLocaleString('pt-BR'):'';
+    card.innerHTML=`<div class="meta"><span>${row.origin==='presente'?'Lista de presentes':'Confirmação de presença'}</span><span>${escapeHtml(date)}</span></div><div class="name">${escapeHtml(row.name||'Convidado')}</div><blockquote>“${escapeHtml(row.message)}”</blockquote><div class="status"><label><input type="checkbox" ${row.visible?'checked':''} ${row.eligible?'':'disabled'}><span>${row.visible?'Publicado no site':'Exibir no site'}</span></label><span class="feedback">${row.eligible?'':'Confirme o PIX antes de publicar'}</span></div>`;
+    const checkbox=card.querySelector('input'); const label=card.querySelector('.status label span'); const feedback=card.querySelector('.feedback');
+    checkbox.addEventListener('change',async()=>{
+      const next=checkbox.checked; checkbox.disabled=true; feedback.textContent='Salvando...';
+      const {error}=await db.from(row.table).update({exibir_recado:next}).eq('id',row.id);
+      checkbox.disabled=!row.eligible;
+      if(error){ checkbox.checked=!next; feedback.textContent='Erro ao salvar.'; console.error(error); return; }
+      row.visible=next; label.textContent=next?'Publicado no site':'Exibir no site'; feedback.textContent=next?'Recado aprovado.':'Recado retirado.';
+    });
+    list.append(card);
+  });
+}
+checkSession();
+</script>
+</body>
+</html>

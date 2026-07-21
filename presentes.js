@@ -74,11 +74,11 @@ function buildPixPayload({ key, holder, city, amount, description, txid }) {
 
 function renderPixBox(amount, description) {
   const pixBox = document.querySelector("#pix-box");
-  const paymentNotice = document.querySelector("#payment-notice");
+  const demoNotice = document.querySelector("#demo-notice");
 
   if (!CONFIG.pixKey.trim()) {
     pixBox.hidden = true;
-    paymentNotice.hidden = false;
+    demoNotice.hidden = false;
     return;
   }
 
@@ -95,8 +95,16 @@ function renderPixBox(amount, description) {
   document.querySelector("#pix-qr").src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
 
   pixBox.hidden = false;
-  paymentNotice.hidden = true;
+  demoNotice.hidden = true;
+  demoNotice.querySelector("strong").textContent = "Presente registrado!";
+  demoNotice.querySelector("p").textContent = "Assim que recebermos seu Pix, seu presente será confirmado por aqui.";
 }
+
+const sampleMessages = [
+  { name: "Tripulação da família", message: "Que o futuro de vocês tenha amor de sobra, risadas diárias e uma Lavadora 3000 funcionando perfeitamente." },
+  { name: "Convidados do setor terrestre", message: "Desejamos uma vida inteira de aventuras, parceria e muitos cafés teletransportados na hora certa." },
+  { name: "Central de boas energias", message: "Que essa nova missão seja a mais bonita de todas. Estamos felizes por fazer parte do lançamento!" }
+];
 
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
@@ -246,20 +254,28 @@ function renderGifts() {
 // Busca dos recados confirmados no Supabase
 // ------------------------------
 async function fetchMessages() {
-  const { data, error } = await db
-    .from("contribuicoes")
-    .select("nome_convidado, recado")
-    .eq("status", "confirmado")
-    .not("recado", "is", null)
-    .order("confirmado_em", { ascending: false })
-    .limit(6);
+  const { data, error } = await db.rpc("listar_recados_publicos");
 
   if (error) {
-    console.error("Erro ao buscar recados:", error);
+    console.error("Erro ao buscar recados públicos:", error);
     return [];
   }
 
-  return data.map(item => ({ name: item.nome_convidado, message: item.recado }));
+  const seen = new Set();
+  return (data || [])
+    .map(item => ({
+      name: String(item.nome || item.nome_convidado || item.nome_responsavel || "Convidado").trim(),
+      message: String(item.recado || "").trim(),
+      createdAt: item.criado_em || null
+    }))
+    .filter(item => {
+      if (!item.message) return false;
+      const key = `${item.name.toLocaleLowerCase("pt-BR")}|${item.message.toLocaleLowerCase("pt-BR")}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 12);
 }
 
 async function renderMessages() {
@@ -270,13 +286,21 @@ async function renderMessages() {
     messageList.innerHTML = '<p class="empty-messages">Os primeiros recados dos nossos convidados aparecerão aqui.</p>';
     return;
   }
+
   messages.forEach((item) => {
     const card = document.createElement("article");
     card.className = "message-card";
+
     const quote = document.createElement("blockquote");
-    quote.textContent = `"${item.message}"`;
+    quote.textContent = `“${item.message}”`;
+
     const footer = document.createElement("footer");
-    footer.textContent = item.name;
+    const label = document.createElement("span");
+    label.textContent = "Mensagem de";
+    const author = document.createElement("strong");
+    author.textContent = item.name;
+    footer.append(label, author);
+
     card.append(quote, footer);
     messageList.append(card);
   });
@@ -424,7 +448,7 @@ giftForm.addEventListener("submit", async (event) => {
   const ok = await saveContribution(activeGift.id, amount, name, message);
 
   submitButton.disabled = false;
-  submitButton.textContent = "Gerar meu Pix";
+  submitButton.textContent = "Preparar meu presente";
 
   if (!ok) {
     amountHelper.textContent = "Algo deu errado ao registrar. Tenta de novo em instantes.";

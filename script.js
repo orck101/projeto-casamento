@@ -155,11 +155,55 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.13 });
 $$('.reveal').forEach(element => observer.observe(element));
 
-async function loadGuestMessages() {
+function prepareMessagesInterface() {
   const section = $('#guest-messages-section');
   const card = $('#guest-message-card');
+  if (!section || !card) return;
+
+  section.id = 'mensagens';
+
+  let author = $('#guest-message-author');
+  if (!author) {
+    author = document.createElement('p');
+    author.id = 'guest-message-author';
+    author.className = 'guest-message-author';
+    $('#guest-message-text').insertAdjacentElement('afterend', author);
+  }
+
+  const heroActions = $('.hero-actions');
+  if (heroActions && !heroActions.querySelector('[data-messages-link]')) {
+    const link = document.createElement('a');
+    link.className = 'button button-messages';
+    link.href = '#mensagens';
+    link.dataset.messagesLink = '';
+    link.textContent = 'Ver mensagens para o casal';
+    heroActions.append(link);
+  }
+
+  if (!document.querySelector('#messages-integration-style')) {
+    const style = document.createElement('style');
+    style.id = 'messages-integration-style';
+    style.textContent = `
+      .button-messages { border-color: rgba(63,86,99,.28); background: rgba(255,255,255,.72); color: var(--blue-dark); }
+      .button-messages:hover { background: #fff; }
+      .guest-message-author { margin: 22px 0 0; color: #f0dfa9; font-family: "Great Vibes", cursive; font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1; }
+      .guest-message-counter { margin-top: 13px; }
+      @media (max-width: 560px) { .hero-actions .button-messages { width: 100%; } }
+    `;
+    document.head.append(style);
+  }
+}
+
+async function loadGuestMessages() {
+  prepareMessagesInterface();
+
+  const section = $('#mensagens');
+  const card = $('#guest-message-card');
   const messageText = $('#guest-message-text');
+  const author = $('#guest-message-author');
   const counter = $('#guest-message-counter');
+
+  if (!section || !card || !messageText || !author || !counter) return;
 
   const { data, error } = await db.rpc('listar_recados_publicos');
   if (error) {
@@ -167,11 +211,20 @@ async function loadGuestMessages() {
     return;
   }
 
-  const messages = [...new Set(
-    (data || [])
-      .map(item => String(item.recado || '').trim())
-      .filter(Boolean)
-  )];
+  const seen = new Set();
+  const messages = (data || [])
+    .map(item => ({
+      name: String(item.nome || item.nome_convidado || item.nome_responsavel || 'Convidado').trim(),
+      message: String(item.recado || '').trim(),
+      createdAt: item.criado_em || null
+    }))
+    .filter(item => {
+      if (!item.message) return false;
+      const key = `${item.name.toLocaleLowerCase('pt-BR')}|${item.message.toLocaleLowerCase('pt-BR')}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
   if (!messages.length) return;
 
@@ -180,10 +233,12 @@ async function loadGuestMessages() {
 
   function renderMessage(index, animate = false) {
     const update = () => {
-      messageText.textContent = messages[index];
+      const item = messages[index];
+      messageText.textContent = item.message;
+      author.textContent = `— ${item.name}`;
       counter.textContent = messages.length > 1
         ? `Mensagem ${index + 1} de ${messages.length}`
-        : 'Mensagem de um convidado';
+        : 'Mensagem para o casal';
       card.classList.remove('changing');
     };
 
