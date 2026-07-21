@@ -127,6 +127,10 @@ const mobileNav = document.querySelector("#gift-nav-mobile");
 let lastFocusedElement = null;
 let activeGift = null;
 let gifts = [];
+let messageRotationTimer = null;
+
+const MESSAGE_BATCH_SIZE = 3;
+const MESSAGE_ROTATION_MS = 7000;
 
 // ------------------------------
 // Busca dos presentes no Supabase
@@ -274,12 +278,58 @@ async function fetchMessages() {
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
-    })
-    .slice(0, 12);
+    });
+}
+
+function shuffleMessages(messages) {
+  const shuffled = [...messages];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
+function createMessageCard(item) {
+  const card = document.createElement("article");
+  card.className = "message-card";
+
+  const quote = document.createElement("blockquote");
+  quote.textContent = `“${item.message}”`;
+
+  const footer = document.createElement("footer");
+  const label = document.createElement("span");
+  label.textContent = "Mensagem de";
+  const author = document.createElement("strong");
+  author.textContent = item.name;
+  footer.append(label, author);
+
+  card.append(quote, footer);
+  return card;
+}
+
+function renderMessageBatch(batch, animate = false) {
+  const update = () => {
+    messageList.replaceChildren(...batch.map(createMessageCard));
+    messageList.classList.remove("changing");
+  };
+
+  if (!animate) {
+    update();
+    return;
+  }
+
+  messageList.classList.add("changing");
+  window.setTimeout(update, 280);
 }
 
 async function renderMessages() {
   const messages = await fetchMessages();
+
+  if (messageRotationTimer) {
+    window.clearInterval(messageRotationTimer);
+    messageRotationTimer = null;
+  }
 
   messageList.innerHTML = "";
   if (!messages.length) {
@@ -287,23 +337,33 @@ async function renderMessages() {
     return;
   }
 
-  messages.forEach((item) => {
-    const card = document.createElement("article");
-    card.className = "message-card";
+  let queue = shuffleMessages(messages);
 
-    const quote = document.createElement("blockquote");
-    quote.textContent = `“${item.message}”`;
+  function nextBatch() {
+    const batch = [];
+    const used = new Set();
 
-    const footer = document.createElement("footer");
-    const label = document.createElement("span");
-    label.textContent = "Mensagem de";
-    const author = document.createElement("strong");
-    author.textContent = item.name;
-    footer.append(label, author);
+    while (batch.length < Math.min(MESSAGE_BATCH_SIZE, messages.length)) {
+      if (!queue.length) queue = shuffleMessages(messages);
 
-    card.append(quote, footer);
-    messageList.append(card);
-  });
+      const item = queue.shift();
+      const key = `${item.name.toLocaleLowerCase("pt-BR")}|${item.message.toLocaleLowerCase("pt-BR")}`;
+      if (used.has(key)) continue;
+
+      used.add(key);
+      batch.push(item);
+    }
+
+    return batch;
+  }
+
+  renderMessageBatch(nextBatch());
+
+  if (messages.length > MESSAGE_BATCH_SIZE) {
+    messageRotationTimer = window.setInterval(() => {
+      renderMessageBatch(nextBatch(), true);
+    }, MESSAGE_ROTATION_MS);
+  }
 }
 
 function setPresetButtons(gift) {

@@ -162,7 +162,8 @@ a { color: inherit; }
 .free-gift-icon svg { width: 42px; height: 42px; }
 
 .messages-section { padding: 100px 0 120px; background: var(--teal-soft); overflow: hidden; }
-.message-marquee { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.message-marquee { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; transition: opacity .28s ease, transform .28s ease; }
+.message-marquee.changing { opacity: 0; transform: translateY(10px); }
 .message-card { min-height: 210px; display: flex; flex-direction: column; justify-content: space-between; padding: 27px; border: 1px solid rgba(32,53,64,.11); border-radius: 25px; background: rgba(255,253,249,.78); }
 .message-card blockquote { margin: 0; color: var(--ink); font-family: "Fredoka", sans-serif; font-size: 1.05rem; line-height: 1.55; }
 .message-card footer { margin-top: 24px; color: var(--teal); font-family: "Space Mono", monospace; font-size: .71rem; font-weight: 700; text-transform: uppercase; }
