@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="index-ajustes.css">
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
@@ -49,6 +50,7 @@
           <div class="hero-actions">
             <button type="button" class="button button-primary" data-open-rsvp>Eu vou!</button>
             <a class="button button-secondary" href="presentes.html">Lista de presentes</a>
+            <a class="button button-messages" href="#mensagens" data-messages-link>Ver mensagens para o casal</a>
           </div>
           <p class="deadline">Confirme sua presença até 30 de julho.</p>
         </div>
@@ -62,7 +64,7 @@
           <h2>Falta pouco para celebrarmos juntos</h2>
         </div>
         <div class="countdown" id="countdown" aria-live="polite">
-          <div><strong id="days">000</strong><span>dias</span></div>
+          <div><strong id="days">0</strong><span>dias</span></div>
           <div><strong id="hours">00</strong><span>horas</span></div>
           <div><strong id="minutes">00</strong><span>minutos</span></div>
           <div><strong id="seconds">00</strong><span>segundos</span></div>
@@ -93,33 +95,27 @@
           <p class="section-kicker">Nosso grande dia</p>
           <h2>Todos os detalhes em um só lugar</h2>
         </div>
-        <div class="event-grid">
-          <article class="event-card reveal">
-            <span class="event-number">01</span>
+
+        <div class="event-details-card reveal">
+          <div class="event-detail">
             <p>Data</p>
             <h3>08 de agosto de 2026</h3>
             <span>Sábado</span>
-          </article>
-          <article class="event-card reveal">
-            <span class="event-number">02</span>
+          </div>
+
+          <div class="event-detail">
             <p>Horário</p>
             <h3>13 horas</h3>
             <span>Almoço de celebração</span>
-          </article>
-          <article class="event-card reveal">
-            <span class="event-number">03</span>
+          </div>
+
+          <div class="event-detail event-detail-location">
             <p>Local</p>
             <h3>Recanto Terashima</h3>
-            <span>Est. Part. Fazenda São Pedro, 426</span>
-          </article>
-        </div>
-        <div class="location-panel reveal">
-          <div>
-            <p class="section-kicker">Como chegar</p>
-            <h3>Recanto Terashima</h3>
-            <p>Estrada Particular Fazenda São Pedro, 426</p>
+            <span>Estrada Particular Fazenda São Pedro, 426</span>
           </div>
-          <a class="button button-primary" href="https://www.google.com/maps/search/?api=1&query=Recanto+Terashima+Estrada+Particular+Fazenda+S%C3%A3o+Pedro+426" target="_blank" rel="noopener noreferrer">Abrir no mapa</a>
+
+          <a class="button button-primary event-map-button" href="https://www.google.com/maps/search/?api=1&query=Recanto+Terashima+Estrada+Particular+Fazenda+S%C3%A3o+Pedro+426" target="_blank" rel="noopener noreferrer">Abrir no mapa</a>
         </div>
       </div>
     </section>
@@ -148,16 +144,17 @@
       </div>
     </section>
 
-    <section class="guest-messages-section section" id="guest-messages-section" hidden>
+    <section class="guest-messages-section section" id="mensagens" hidden>
       <div class="container guest-messages-inner">
         <div class="guest-messages-heading">
           <p class="section-kicker">Recados dos convidados</p>
           <h2>Carinho para o nosso novo capítulo</h2>
-          <p>Mensagens deixadas por quem já confirmou presença para celebrar conosco.</p>
+          <p>Mensagens deixadas por quem participa da construção dessa nova história.</p>
         </div>
         <div class="guest-message-card" id="guest-message-card">
           <span class="guest-message-mark" aria-hidden="true">“</span>
           <blockquote id="guest-message-text"></blockquote>
+          <p class="guest-message-author" id="guest-message-author"></p>
           <p class="guest-message-counter" id="guest-message-counter"></p>
         </div>
       </div>
@@ -230,7 +227,7 @@
         <div class="field full">
           <label for="message">Recado para os noivos</label>
           <textarea id="message" name="message" rows="3" placeholder="Campo opcional"></textarea>
-          <small class="field-hint">O recado poderá aparecer anonimamente no site depois da aprovação dos noivos.</small>
+          <small class="field-hint">O recado e seu nome poderão aparecer no site depois da aprovação dos noivos.</small>
         </div>
         <label class="consent full">
           <input type="checkbox" required>

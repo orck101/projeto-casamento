@@ -14,7 +14,7 @@ function updateCountdown() {
     seconds: Math.max(0, Math.floor((difference / 1_000) % 60)),
   };
 
-  $('#days').textContent = String(units.days).padStart(3, '0');
+  $('#days').textContent = String(units.days);
   $('#hours').textContent = String(units.hours).padStart(2, '0');
   $('#minutes').textContent = String(units.minutes).padStart(2, '0');
   $('#seconds').textContent = String(units.seconds).padStart(2, '0');
@@ -155,10 +155,13 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.13 });
 $$('.reveal').forEach(element => observer.observe(element));
 
-function prepareMessagesInterface() {
-  const section = $('#guest-messages-section');
+function ensureMessagesInterface() {
+  const section = $('#mensagens') || $('#guest-messages-section');
   const card = $('#guest-message-card');
-  if (!section || !card) return;
+  const messageText = $('#guest-message-text');
+  const counter = $('#guest-message-counter');
+
+  if (!section || !card || !messageText || !counter) return null;
 
   section.id = 'mensagens';
 
@@ -167,7 +170,7 @@ function prepareMessagesInterface() {
     author = document.createElement('p');
     author.id = 'guest-message-author';
     author.className = 'guest-message-author';
-    $('#guest-message-text').insertAdjacentElement('afterend', author);
+    messageText.insertAdjacentElement('afterend', author);
   }
 
   const heroActions = $('.hero-actions');
@@ -180,30 +183,14 @@ function prepareMessagesInterface() {
     heroActions.append(link);
   }
 
-  if (!document.querySelector('#messages-integration-style')) {
-    const style = document.createElement('style');
-    style.id = 'messages-integration-style';
-    style.textContent = `
-      .button-messages { border-color: rgba(63,86,99,.28); background: rgba(255,255,255,.72); color: var(--blue-dark); }
-      .button-messages:hover { background: #fff; }
-      .guest-message-author { margin: 22px 0 0; color: #f0dfa9; font-family: "Great Vibes", cursive; font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1; }
-      .guest-message-counter { margin-top: 13px; }
-      @media (max-width: 560px) { .hero-actions .button-messages { width: 100%; } }
-    `;
-    document.head.append(style);
-  }
+  return { section, card, messageText, author, counter };
 }
 
 async function loadGuestMessages() {
-  prepareMessagesInterface();
+  const interfaceElements = ensureMessagesInterface();
+  if (!interfaceElements) return;
 
-  const section = $('#mensagens');
-  const card = $('#guest-message-card');
-  const messageText = $('#guest-message-text');
-  const author = $('#guest-message-author');
-  const counter = $('#guest-message-counter');
-
-  if (!section || !card || !messageText || !author || !counter) return;
+  const { section, card, messageText, author, counter } = interfaceElements;
 
   const { data, error } = await db.rpc('listar_recados_publicos');
   if (error) {

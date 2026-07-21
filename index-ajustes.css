@@ -1,0 +1,123 @@
+/* Ajustes específicos da página inicial */
+
+.button-messages {
+  border-color: rgba(63, 86, 99, .28);
+  background: rgba(255, 255, 255, .72);
+  color: var(--blue-dark);
+}
+
+.button-messages:hover {
+  background: #fff;
+}
+
+/* Bloco único com data, horário, local e acesso ao mapa */
+.event-details-card {
+  display: grid;
+  grid-template-columns: 1fr .78fr 1.28fr auto;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1px solid rgba(63, 86, 99, .13);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 22px 60px rgba(32, 46, 54, .09);
+}
+
+.event-detail {
+  position: relative;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 34px 30px;
+}
+
+.event-detail + .event-detail {
+  border-left: 1px solid var(--line);
+}
+
+.event-detail p {
+  margin: 0 0 9px;
+  color: var(--gold-dark);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.event-detail h3 {
+  margin: 0 0 7px;
+  color: var(--ink);
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.35rem, 2.1vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.event-detail span {
+  color: var(--muted);
+  font-size: .84rem;
+  line-height: 1.55;
+}
+
+.event-map-button {
+  width: auto;
+  min-width: 170px;
+  margin: auto 28px auto 12px;
+  white-space: nowrap;
+}
+
+/* Autor dos recados da página inicial */
+.guest-message-author {
+  margin: 22px 0 0;
+  color: #f0dfa9;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1;
+}
+
+.guest-message-counter {
+  margin-top: 13px;
+}
+
+@media (max-width: 1000px) {
+  .event-details-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .event-detail:nth-child(3) {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .event-map-button {
+    align-self: center;
+    justify-self: center;
+    margin: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-actions .button-messages {
+    width: 100%;
+  }
+
+  .event-details-card {
+    grid-template-columns: 1fr;
+  }
+
+  .event-detail {
+    min-height: auto;
+    padding: 27px 24px;
+  }
+
+  .event-detail + .event-detail,
+  .event-detail:nth-child(3) {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .event-map-button {
+    width: calc(100% - 48px);
+    margin: 4px 24px 26px;
+  }
+}
