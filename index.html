@@ -26,7 +26,7 @@
         <a href="#nosso-dia">Nosso dia</a>
         <a href="#local">Local</a>
         <a href="#galeria">Fotos</a>
-        <button type="button" class="nav-rsvp" data-open-rsvp>Eu vou!</button>
+        <button type="button" class="nav-rsvp" data-open-rsvp-closed>Eu vou!</button>
       </nav>
     </div>
   </header>
@@ -48,11 +48,11 @@
           </div>
           <p class="hero-meta">Às 13h · Recanto Terashima</p>
           <div class="hero-actions">
-            <button type="button" class="button button-primary" data-open-rsvp>Eu vou!</button>
+            <button type="button" class="button button-primary" data-open-rsvp-closed>Eu vou!</button>
             <a class="button button-secondary" href="presentes.html">Lista de presentes</a>
             <a class="button button-messages" href="#mensagens" data-messages-link>Ver mensagens para o casal</a>
           </div>
-          <p class="deadline">Confirme sua presença até 30 de julho.</p>
+          <p class="deadline">As confirmações de presença foram encerradas em 31 de julho.</p>
         </div>
       </div>
     </section>
@@ -84,7 +84,7 @@
           <p>É com muita alegria que queremos compartilhar este momento tão especial das nossas vidas.</p>
           <p>Nosso casamento civil será uma cerimônia reservada. Depois, queremos celebrar o início dessa nova etapa ao lado das pessoas que amamos, em um almoço preparado com muito carinho.</p>
           <p class="highlight-copy">Sua presença será um presente para nós. Esperamos você para comemorar, brindar e criar lindas lembranças desse dia.</p>
-          <button type="button" class="text-link" data-open-rsvp>Confirmar minha presença <span>→</span></button>
+          <button type="button" class="text-link" data-open-rsvp-closed>Confirmar minha presença <span>→</span></button>
         </div>
       </div>
     </section>
@@ -139,8 +139,8 @@
       <div class="container rsvp-inner reveal">
         <p class="section-kicker">Você faz parte dessa história</p>
         <h2>Podemos contar com a sua presença?</h2>
-        <p>Para organizarmos tudo com carinho, confirme quem estará conosco até 30 de julho de 2026.</p>
-        <button type="button" class="button button-primary button-large" data-open-rsvp>Sim, eu vou!</button>
+        <p>O prazo para confirmação de presença foi encerrado no dia 31 de julho de 2026.</p>
+        <button type="button" class="button button-primary button-large" data-open-rsvp-closed>Sim, eu vou!</button>
       </div>
     </section>
 
@@ -249,9 +249,53 @@
     </div>
   </div>
 
+
+  <div class="modal" id="rsvp-closed-modal" role="dialog" aria-modal="true" aria-labelledby="rsvp-closed-title" hidden>
+    <div class="modal-backdrop" data-close-rsvp-closed></div>
+    <div class="modal-panel" role="document">
+      <button class="modal-close" type="button" aria-label="Fechar aviso" data-close-rsvp-closed>×</button>
+      <div class="modal-heading">
+        <p class="section-kicker">Confirmação de presença</p>
+        <h2 id="rsvp-closed-title">Confirmações encerradas</h2>
+        <p>O prazo para confirmação de presença foi encerrado no dia <strong>31/07/2026</strong>.</p>
+      </div>
+      <div class="rsvp-success-actions">
+        <a class="button button-primary button-large" href="https://wa.me/5512991360571" target="_blank" rel="noopener noreferrer">Falar com os noivos</a>
+        <button type="button" class="button button-secondary" data-close-rsvp-closed>Fechar</button>
+      </div>
+    </div>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="script.js"></script>
+  <script>
+    (() => {
+      const closedModal = document.querySelector('#rsvp-closed-modal');
+      const openButtons = [...document.querySelectorAll('[data-open-rsvp-closed]')];
+      const closeButtons = [...document.querySelectorAll('[data-close-rsvp-closed]')];
+      let lastFocusedElement = null;
+
+      function openClosedNotice() {
+        lastFocusedElement = document.activeElement;
+        closedModal.hidden = false;
+        document.body.classList.add('modal-open');
+        window.setTimeout(() => closedModal.querySelector('.modal-close')?.focus(), 40);
+      }
+
+      function closeClosedNotice() {
+        closedModal.hidden = true;
+        document.body.classList.remove('modal-open');
+        lastFocusedElement?.focus();
+      }
+
+      openButtons.forEach(button => button.addEventListener('click', openClosedNotice));
+      closeButtons.forEach(button => button.addEventListener('click', closeClosedNotice));
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !closedModal.hidden) closeClosedNotice();
+      });
+    })();
+  </script>
 </body>
 </html>
