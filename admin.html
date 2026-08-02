@@ -32,10 +32,11 @@
     #login-view h1 { text-align: center; }
     .field { text-align: left; margin-bottom: 1rem; }
     label { display: block; font-size: .85rem; margin-bottom: .35rem; color: rgba(26,31,61,.7); }
-    input {
+    input, textarea {
       width: 100%; padding: .7rem .85rem; border-radius: 10px;
-      border: 1px solid var(--border); font-size: 1rem;
+      border: 1px solid var(--border); font: inherit; background: #fff; color: var(--ink);
     }
+    textarea { resize: vertical; min-height: 88px; }
     button {
       cursor: pointer; border: none; border-radius: 10px;
       font-size: .95rem; font-weight: 600; padding: .7rem 1.1rem;
@@ -113,6 +114,41 @@
     .message-visibility small.ok { color: var(--accent-dark); }
     .message-visibility small.error { color: var(--danger); }
 
+    /* Cadastro manual de convidados */
+    .rsvp-actions { display: flex; align-items: center; justify-content: flex-end; gap: .6rem; flex-wrap: wrap; }
+    .btn-add-guest { background: var(--accent); color: #fff; }
+    .btn-add-guest:hover { background: var(--accent-dark); }
+    .admin-modal[hidden] { display: none; }
+    .admin-modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; }
+    .admin-modal-backdrop { position: absolute; inset: 0; background: rgba(18, 25, 43, .58); backdrop-filter: blur(4px); }
+    .admin-modal-card {
+      position: relative; z-index: 1; width: min(620px, 100%); max-height: calc(100vh - 40px); overflow: auto;
+      background: var(--card); border-radius: 18px; border: 1px solid var(--border);
+      box-shadow: 0 28px 80px rgba(18, 25, 43, .28); padding: 1.4rem;
+    }
+    .admin-modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .admin-modal-head h2 { margin: 0 0 .25rem; }
+    .admin-modal-head p { margin: 0; color: rgba(26,31,61,.6); font-size: .88rem; }
+    .admin-modal-close { width: 40px; height: 40px; padding: 0; border-radius: 50%; background: #f3f1ec; color: var(--ink); font-size: 1.35rem; line-height: 1; }
+    .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .admin-form-grid .full { grid-column: 1 / -1; }
+    .admin-form-grid .field { margin: 0; }
+    .admin-form-grid label { font-weight: 600; }
+    .admin-form-note { margin: -.25rem 0 0; color: rgba(26,31,61,.55); font-size: .78rem; line-height: 1.5; }
+    .admin-form-actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: 1.25rem; }
+    .admin-form-actions .btn-primary { width: auto; margin: 0; }
+    .admin-form-feedback { min-height: 1.25em; margin: .8rem 0 0; font-size: .84rem; text-align: right; }
+    .admin-form-feedback.ok { color: var(--accent-dark); }
+    .admin-form-feedback.error { color: var(--danger); }
+    body.admin-modal-open { overflow: hidden; }
+    @media (max-width: 620px) {
+      .topbar { align-items: flex-start; gap: 1rem; flex-direction: column; }
+      .rsvp-actions { width: 100%; justify-content: stretch; }
+      .rsvp-actions button { flex: 1; }
+      .admin-form-grid { grid-template-columns: 1fr; }
+      .admin-form-grid .full { grid-column: auto; }
+    }
+
     /* Pagamentos pendentes */
     .pending-row {
       background: var(--card); border-radius: 14px; padding: 1rem 1.25rem;
@@ -177,7 +213,10 @@
           <h2>Confirmações de presença</h2>
           <p class="subtitle">Clique em uma pessoa para ver quem ela levou</p>
         </div>
-        <button class="logout-btn" id="export-names-button">Baixar lista de nomes</button>
+        <div class="rsvp-actions">
+          <button type="button" class="btn-add-guest" id="open-add-guest-button">Adicionar convidado</button>
+          <button type="button" class="logout-btn" id="export-names-button">Baixar lista de nomes</button>
+        </div>
       </div>
 
       <div class="summary" id="rsvp-summary"></div>
@@ -185,6 +224,61 @@
       <div id="rsvp-list"></div>
     </div>
 
+  </div>
+
+  <div class="admin-modal" id="add-guest-modal" role="dialog" aria-modal="true" aria-labelledby="add-guest-title" hidden>
+    <div class="admin-modal-backdrop" data-close-add-guest></div>
+    <section class="admin-modal-card">
+      <div class="admin-modal-head">
+        <div>
+          <h2 id="add-guest-title">Adicionar convidado</h2>
+          <p>Cadastre manualmente uma presença confirmada.</p>
+        </div>
+        <button type="button" class="admin-modal-close" data-close-add-guest aria-label="Fechar">×</button>
+      </div>
+
+      <form id="add-guest-form">
+        <div class="admin-form-grid">
+          <div class="field full">
+            <label for="admin-guest-responsible">Nome do responsável</label>
+            <input id="admin-guest-responsible" name="responsibleName" type="text" autocomplete="name" required>
+          </div>
+
+          <div class="field full">
+            <label for="admin-guest-phone">Telefone</label>
+            <input id="admin-guest-phone" name="phone" type="tel" autocomplete="tel" placeholder="(12) 99999-9999" required>
+          </div>
+
+          <div class="field">
+            <label for="admin-guest-adults">Número de adultos</label>
+            <input id="admin-guest-adults" name="adults" type="number" min="1" max="30" value="1" required>
+          </div>
+
+          <div class="field">
+            <label for="admin-guest-children">Número de crianças</label>
+            <input id="admin-guest-children" name="children" type="number" min="0" max="30" value="0" required>
+          </div>
+
+          <div class="field full">
+            <label for="admin-guest-names">Nome de todas as pessoas</label>
+            <textarea id="admin-guest-names" name="guestNames" rows="3" placeholder="Ex.: João, Maria e Pedro" required></textarea>
+          </div>
+
+          <div class="field full">
+            <label for="admin-guest-message">Recado para os noivos</label>
+            <textarea id="admin-guest-message" name="message" rows="3" placeholder="Campo opcional"></textarea>
+          </div>
+
+          <p class="admin-form-note full">A presença será cadastrada como confirmada e aparecerá imediatamente na lista do painel.</p>
+        </div>
+
+        <div class="admin-form-actions">
+          <button type="button" class="logout-btn" data-close-add-guest>Cancelar</button>
+          <button type="submit" class="btn-primary" id="save-add-guest-button">Salvar convidado</button>
+        </div>
+        <p class="admin-form-feedback" id="add-guest-feedback" aria-live="polite"></p>
+      </form>
+    </section>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
