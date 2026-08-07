@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f1e9">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Informações do casamento civil de Victor e Luana para os padrinhos.">
+  <title>Padrinhos — Victor & Luana</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #f5f1e9;
+      --paper-soft: #fbf9f5;
+      --ink: #1e2b33;
+      --muted: #67737a;
+      --blue: #617785;
+      --blue-dark: #3f5663;
+      --gold: #b79a55;
+      --gold-dark: #94773d;
+      --sage: #89967f;
+      --coral: #d47d68;
+      --white: #ffffff;
+      --line: rgba(63, 86, 99, .16);
+      --shadow: 0 24px 70px rgba(32, 46, 54, .12);
+      --radius: 28px;
+      --container: min(1120px, calc(100% - 36px));
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 15% 5%, rgba(183,154,85,.11), transparent 30%),
+        radial-gradient(circle at 92% 20%, rgba(97,119,133,.10), transparent 28%),
+        var(--paper-soft);
+      color: var(--ink);
+      font-family: "Montserrat", system-ui, sans-serif;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+    button { font: inherit; }
+    .container { width: var(--container); margin-inline: auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      height: 72px;
+      background: rgba(251,249,245,.90);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(15px);
+    }
+
+    .topbar-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      text-decoration: none;
+      font-family: "Playfair Display", serif;
+      font-size: 1.18rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+    }
+
+    .brand span { color: var(--gold-dark); margin-inline: .25rem; font-style: italic; }
+
+    .exclusive {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid rgba(148,119,61,.22);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      color: var(--gold-dark);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .exclusive::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 4px rgba(183,154,85,.12);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 92px 0 76px;
+      text-align: center;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "✦";
+      position: absolute;
+      color: rgba(183,154,85,.32);
+      font-size: 5rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .hero::before { left: 6%; top: 55px; transform: rotate(-15deg); }
+    .hero::after { right: 7%; bottom: 45px; transform: rotate(18deg) scale(.72); }
+
+    .eyebrow,
+    .section-kicker {
+      margin: 0 0 12px;
+      color: var(--gold-dark);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: var(--blue-dark);
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(5rem, 10vw, 8.8rem);
+      font-weight: 400;
+      line-height: .8;
+    }
+
+    .hero h1 small {
+      display: block;
+      margin-top: .55em;
+      color: var(--ink);
+      font-family: "Playfair Display", serif;
+      font-size: .18em;
+      font-style: normal;
+      font-weight: 500;
+      letter-spacing: .08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .hero-lead {
+      max-width: 720px;
+      margin: 34px auto 0;
+      color: var(--muted);
+      font-family: "Playfair Display", serif;
+      font-size: clamp(1.08rem, 2vw, 1.35rem);
+      line-height: 1.65;
+    }
+
+    .arrival-card {
+      width: min(780px, 100%);
+      margin: 42px auto 0;
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      overflow: hidden;
+      border: 1px solid rgba(63,86,99,.13);
+      border-radius: 28px;
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--shadow);
+      text-align: left;
+    }
+
+    .arrival-time {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 34px 38px;
+      background: var(--blue-dark);
+      color: white;
+    }
+
+    .arrival-time span {
+      color: rgba(255,255,255,.72);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .arrival-time strong {
+      margin: 2px 0 0;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(3.1rem, 6vw, 4.9rem);
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .arrival-copy {
+      padding: 34px 38px;
+    }
+
+    .arrival-copy strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--ink);
+      font-family: "Playfair Display", serif;
+      font-size: 1.45rem;
+      font-weight: 600;
+    }
+
+    .arrival-copy p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .section { padding: 84px 0; }
+
+    .section-heading {
+      max-width: 760px;
+      margin: 0 auto 38px;
+      text-align: center;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Playfair Display", serif;
+      font-size: clamp(2.1rem, 4vw, 3.3rem);
+      font-weight: 500;
+      line-height: 1.15;
+    }
+
+    .section-heading p:last-child {
+      max-width: 650px;
+      margin: 18px auto 0;
+      color: var(--muted);
+    }
+
+    .location-card {
+      display: grid;
+      grid-template-columns: 1.12fr .88fr;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow);
+    }
+
+    .location-copy {
+      padding: 52px;
+    }
+
+    .location-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: var(--gold-dark);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .location-label::before { content: "●"; font-size: .55rem; }
+
+    .location-copy h3 {
+      margin: 0 0 15px;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(1.75rem, 3vw, 2.45rem);
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .address {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .location-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 11px;
+    }
+
+    .button {
+      min-height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 13px 22px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      transition: .2s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+
+    .button-primary {
+      background: var(--blue-dark);
+      color: white;
+      box-shadow: 0 12px 28px rgba(63,86,99,.18);
+    }
+
+    .button-secondary {
+      border-color: var(--gold);
+      background: rgba(255,255,255,.78);
+      color: var(--gold-dark);
+    }
+
+    .map-visual {
+      position: relative;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        linear-gradient(36deg, transparent 47%, rgba(255,255,255,.36) 48% 52%, transparent 53%),
+        linear-gradient(-28deg, transparent 43%, rgba(255,255,255,.40) 44% 49%, transparent 50%),
+        linear-gradient(90deg, rgba(63,86,99,.04) 1px, transparent 1px),
+        linear-gradient(rgba(63,86,99,.04) 1px, transparent 1px),
+        #dfe6df;
+      background-size: 210px 160px, 250px 190px, 38px 38px, 38px 38px, auto;
+    }
+
+    .map-visual::before,
+    .map-visual::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(97,119,133,.14);
+    }
+
+    .map-visual::before { width: 120%; height: 19px; transform: rotate(-14deg); }
+    .map-visual::after { width: 110%; height: 14px; transform: rotate(29deg); }
+
+    .pin {
+      position: relative;
+      z-index: 2;
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+      border: 9px solid rgba(255,255,255,.78);
+      border-radius: 50% 50% 50% 0;
+      background: var(--coral);
+      box-shadow: 0 18px 40px rgba(45,60,68,.22);
+      color: white;
+      font-family: "Playfair Display", serif;
+      font-size: 1.85rem;
+      font-weight: 600;
+      transform: rotate(-45deg);
+    }
+
+    .pin span { transform: rotate(45deg); }
+
+    .dress-section {
+      background: var(--paper);
+      border-top: 1px solid rgba(63,86,99,.08);
+      border-bottom: 1px solid rgba(63,86,99,.08);
+    }
+
+    .dress-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .dress-card {
+      min-height: 285px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.72);
+    }
+
+    .dress-icon {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 23px;
+      border-radius: 50%;
+      background: rgba(183,154,85,.14);
+      color: var(--gold-dark);
+      font-size: 1.45rem;
+    }
+
+    .dress-card:nth-child(2) .dress-icon {
+      background: rgba(97,119,133,.12);
+      color: var(--blue-dark);
+    }
+
+    .dress-card:nth-child(3) .dress-icon {
+      background: rgba(212,125,104,.12);
+      color: var(--coral);
+    }
+
+    .dress-card h3 {
+      margin: 0 0 11px;
+      font-family: "Playfair Display", serif;
+      font-size: 1.42rem;
+      font-weight: 600;
+    }
+
+    .dress-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .dress-card ul {
+      margin: 15px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .dress-card li + li { margin-top: 6px; }
+
+    .change-card {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      padding: 26px 30px;
+      border: 1px solid rgba(137,150,127,.26);
+      border-radius: 22px;
+      background: rgba(137,150,127,.10);
+    }
+
+    .change-icon {
+      width: 62px;
+      height: 62px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255,255,255,.78);
+      font-size: 1.55rem;
+    }
+
+    .change-card h3 {
+      margin: 0 0 5px;
+      font-family: "Playfair Display", serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+    }
+
+    .change-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .mini-timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,.78);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 30px 28px;
+      text-align: center;
+    }
+
+    .timeline-item + .timeline-item { border-left: 1px solid var(--line); }
+
+    .timeline-item span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--gold-dark);
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .timeline-item strong {
+      display: block;
+      font-family: "Playfair Display", serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .timeline-item small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    .final-note {
+      padding: 72px 0 86px;
+      text-align: center;
+    }
+
+    .final-note-box {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 42px;
+      border-radius: 28px;
+      background: var(--blue-dark);
+      color: white;
+      box-shadow: 0 24px 55px rgba(63,86,99,.22);
+    }
+
+    .final-note-box p:first-child {
+      margin: 0 0 7px;
+      color: rgba(255,255,255,.65);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .final-note-box h2 {
+      margin: 0;
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(3.2rem, 7vw, 5.2rem);
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .final-note-box p:last-of-type {
+      max-width: 650px;
+      margin: 19px auto 0;
+      color: rgba(255,255,255,.78);
+      font-size: .95rem;
+    }
+
+    .final-actions {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .final-note .button-primary {
+      background: white;
+      color: var(--blue-dark);
+      box-shadow: none;
+    }
+
+    .final-note .button-secondary {
+      border-color: rgba(255,255,255,.34);
+      background: transparent;
+      color: white;
+    }
+
+    footer {
+      padding: 0 0 38px;
+      text-align: center;
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    footer strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--blue-dark);
+      font-family: "Playfair Display", serif;
+      font-size: 1rem;
+      letter-spacing: .08em;
+      font-weight: 500;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      z-index: 100;
+      max-width: calc(100% - 36px);
+      padding: 12px 17px;
+      border-radius: 12px;
+      background: var(--ink);
+      color: white;
+      font-size: .82rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,.2);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: .22s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 820px) {
+      .hero { padding-top: 72px; }
+      .arrival-card,
+      .location-card { grid-template-columns: 1fr; }
+      .arrival-card { max-width: 570px; }
+      .arrival-time { text-align: center; }
+      .map-visual { min-height: 270px; order: -1; }
+      .dress-grid { grid-template-columns: 1fr; }
+      .dress-card { min-height: 0; }
+      .mini-timeline { grid-template-columns: 1fr; }
+      .timeline-item + .timeline-item { border-left: 0; border-top: 1px solid var(--line); }
+    }
+
+    @media (max-width: 580px) {
+      :root { --container: min(100% - 26px, 1120px); }
+      .topbar { height: 64px; }
+      .exclusive { font-size: .58rem; padding: 7px 10px; }
+      .hero { padding: 60px 0 58px; }
+      .hero::before, .hero::after { display: none; }
+      .hero h1 { font-size: clamp(4.6rem, 25vw, 6.4rem); }
+      .hero h1 small { font-size: .19em; }
+      .hero-lead { font-size: 1.02rem; }
+      .arrival-card { margin-top: 32px; border-radius: 22px; }
+      .arrival-time, .arrival-copy { padding: 28px 25px; }
+      .arrival-time strong { font-size: 3.7rem; }
+      .arrival-copy { text-align: center; }
+      .section { padding: 66px 0; }
+      .section-heading { margin-bottom: 30px; }
+      .location-copy { padding: 30px 24px; text-align: center; }
+      .location-actions { flex-direction: column; }
+      .button { width: 100%; }
+      .map-visual { min-height: 230px; }
+      .dress-card { padding: 25px; }
+      .change-card { grid-template-columns: 1fr; text-align: center; padding: 25px; }
+      .change-icon { margin: 0 auto; }
+      .final-note { padding: 58px 0 68px; }
+      .final-note-box { padding: 34px 23px; border-radius: 23px; }
+      .final-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="index.html" aria-label="Voltar ao site de Victor e Luana">V <span>&</span> L</a>
+      <span class="exclusive">Informações para padrinhos</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">08 · 08 · 2026</p>
+        <h1>
+          Padrinhos
+          <small>um recadinho especial para vocês</small>
+        </h1>
+
+        <p class="hero-lead">
+          Antes do nosso almoço de celebração, teremos um momento muito especial no cartório.
+          E é muito importante para nós ter vocês por perto também nessa hora.
+        </p>
+
+        <div class="arrival-card">
+          <div class="arrival-time">
+            <span>Chegada no cartório</span>
+            <strong>10h20</strong>
+          </div>
+          <div class="arrival-copy">
+            <strong>Cheguem até esse horário, combinado?</strong>
+            <p>
+              Pedimos que os padrinhos estejam no cartório até <b>10h20</b>,
+              para conseguirmos organizar tudo com tranquilidade antes do casamento civil.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="cartorio">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-kicker">Onde vocês precisam estar</p>
+          <h2>O cartório</h2>
+          <p>
+            Para não ter erro no caminho, deixamos abaixo o endereço e o acesso direto à localização.
+          </p>
+        </div>
+
+        <div class="location-card">
+          <div class="location-copy">
+            <span class="location-label">Casamento civil</span>
+            <h3>Cartório de Registro Civil das Pessoas Naturais de Pindamonhangaba</h3>
+            <p class="address" id="cartorio-address">
+              Rua Marechal Deodoro da Fonseca, 50<br>
+              Jardim Boa Vista · Pindamonhangaba – SP<br>
+              CEP 12401-010
+            </p>
+
+            <div class="location-actions">
+              <a
+                class="button button-primary"
+                href="https://maps.app.goo.gl/uJeRsFNTA9S7LANE6"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📍 Abrir no Google Maps
+              </a>
+
+              <button class="button button-secondary" type="button" id="copy-address">
+                Copiar endereço
+              </button>
+            </div>
+          </div>
+
+          <div class="map-visual" aria-hidden="true">
+            <div class="pin"><span>V&L</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dress-section" id="como-se-vestir">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-kicker">Como se vestir</p>
+          <h2>Arrumados, mas sem exagero</h2>
+          <p>
+            O casamento no cartório pede um visual um pouco mais elegante,
+            mas não precisa ser nada muito elaborado. A ideia é ficar bonito,
+            confortável e com a cara de uma cerimônia civil.
+          </p>
+        </div>
+
+        <div class="dress-grid">
+          <article class="dress-card">
+            <div class="dress-icon">✓</div>
+            <h3>O clima</h3>
+            <p>
+              Pensem em <b>social leve</b> ou <b>esporte fino simples</b>:
+              uma produção bem arrumada, porém natural e confortável.
+            </p>
+          </article>
+
+          <article class="dress-card">
+            <div class="dress-icon">♙</div>
+            <h3>Para eles</h3>
+            <p>Algumas opções que combinam bem com o momento:</p>
+            <ul>
+              <li>camisa social ou camisa de tecido leve;</li>
+              <li>calça de sarja, social ou alfaiataria;</li>
+              <li>sapato, mocassim ou tênis mais discreto;</li>
+              <li>terno e gravata não são obrigatórios.</li>
+            </ul>
+          </article>
+
+          <article class="dress-card">
+            <div class="dress-icon">✦</div>
+            <h3>Para elas</h3>
+            <p>Vale apostar em algo elegante, mas sem cara de festa formal:</p>
+            <ul>
+              <li>vestido leve ou midi;</li>
+              <li>conjunto ou alfaiataria;</li>
+              <li>sandália, sapatilha ou salto confortável;</li>
+              <li>não precisa de vestido longo ou produção muito elaborada.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="change-card">
+          <div class="change-icon">👕</div>
+          <div>
+            <h3>Levem uma troca de roupa para a chácara</h3>
+            <p>
+              Depois do cartório, a proposta muda completamente: queremos todo mundo bem à vontade.
+              Então levem uma roupa mais casual e confortável para trocar quando chegarmos à chácara
+              e aproveitar o restante do dia sem preocupação.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="resumo">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-kicker">Para não esquecer</p>
+          <h2>O resumo dos padrinhos</h2>
+        </div>
+
+        <div class="mini-timeline">
+          <div class="timeline-item">
+            <span>01 · Horário</span>
+            <strong>Até 10h20</strong>
+            <small>Estejam no cartório até esse horário.</small>
+          </div>
+
+          <div class="timeline-item">
+            <span>02 · Cartório</span>
+            <strong>Marechal Deodoro, 50</strong>
+            <small>Use o botão do mapa para abrir a rota.</small>
+          </div>
+
+          <div class="timeline-item">
+            <span>03 · Depois</span>
+            <strong>Roupa confortável</strong>
+            <small>Levem uma troca para aproveitar a chácara à vontade.</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-note">
+      <div class="container">
+        <div class="final-note-box">
+          <p>Mais importante que qualquer detalhe</p>
+          <h2>É ter vocês com a gente.</h2>
+          <p>
+            Obrigado por aceitarem estar tão perto de nós nesse momento.
+            Nos vemos no cartório — e depois seguimos juntos para comemorar do jeito que a gente gosta.
+          </p>
+
+          <div class="final-actions">
+            <a
+              class="button button-primary"
+              href="https://maps.app.goo.gl/uJeRsFNTA9S7LANE6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              📍 Traçar rota para o cartório
+            </a>
+            <a class="button button-secondary" href="index.html">Voltar ao site do casamento</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <strong>Victor & Luana · 08.08.2026</strong>
+      Página com informações especiais para os nossos padrinhos.
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Endereço copiado!</div>
+
+  <script>
+    const copyButton = document.querySelector("#copy-address");
+    const toast = document.querySelector("#toast");
+
+    copyButton?.addEventListener("click", async () => {
+      const address = "Rua Marechal Deodoro da Fonseca, 50 - Jardim Boa Vista, Pindamonhangaba - SP, 12401-010";
+
+      try {
+        await navigator.clipboard.writeText(address);
+        toast.textContent = "Endereço copiado!";
+      } catch (error) {
+        toast.textContent = address;
+      }
+
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    });
+  </script>
+</body>
+</html>
