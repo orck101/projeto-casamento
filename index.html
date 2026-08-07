@@ -14,6 +14,22 @@
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+  <div class="site-alert" id="site-alert" role="dialog" aria-modal="true" aria-labelledby="site-alert-title" hidden>
+    <div class="site-alert-backdrop" aria-hidden="true"></div>
+    <div class="site-alert-panel" role="document" tabindex="-1">
+      <div class="site-alert-symbol" aria-hidden="true">!</div>
+      <p class="site-alert-kicker">Lembrete importante</p>
+      <h2 id="site-alert-title">Nosso almoço vai ser bem do nosso jeito</h2>
+      <p class="site-alert-text">Depois do casamento civil, vamos comemorar com um <strong>churrasco entre amigos</strong>. Nada de recepção muito formal: venha confortável, disposto a curtir o dia e, se quiser, preparado para a piscina.</p>
+      <p class="site-alert-date">08 de agosto de 2026 <span>·</span> 13 horas</p>
+      <div class="site-alert-actions" aria-label="Atalhos do convite">
+        <button type="button" class="button button-primary" data-alert-go="#inicio">Ir para o site</button>
+        <button type="button" class="button button-secondary" data-alert-go="#local">Local</button>
+        <button type="button" class="button site-alert-dress-button" data-alert-go="#como-se-vestir">Como me vestir?</button>
+      </div>
+    </div>
+  </div>
+
 
   <header class="topbar" id="inicio">
     <div class="container topbar-inner">
@@ -308,6 +324,49 @@
   <script src="config.js"></script>
   <script src="script.js"></script>
   <script>
+    (() => {
+      const siteAlert = document.querySelector('#site-alert');
+      const siteAlertPanel = siteAlert?.querySelector('.site-alert-panel');
+      const siteAlertButtons = [...document.querySelectorAll('[data-alert-go]')];
+
+      function showSiteAlert() {
+        if (!siteAlert) return;
+        siteAlert.hidden = false;
+        document.body.classList.add('modal-open');
+        window.setTimeout(() => siteAlertPanel?.focus(), 40);
+      }
+
+      function closeSiteAlertAndGo(target) {
+        if (!siteAlert) return;
+        siteAlert.hidden = true;
+        document.body.classList.remove('modal-open');
+
+        window.setTimeout(() => {
+          if (target === '#inicio') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+          }
+
+          const destination = document.querySelector(target);
+          destination?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      }
+
+      siteAlertButtons.forEach(button => {
+        button.addEventListener('click', () => closeSiteAlertAndGo(button.dataset.alertGo));
+      });
+
+      siteAlert?.querySelector('.site-alert-backdrop')?.addEventListener('click', () => closeSiteAlertAndGo('#inicio'));
+
+      window.addEventListener('load', showSiteAlert, { once: true });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && siteAlert && !siteAlert.hidden) {
+          closeSiteAlertAndGo('#inicio');
+        }
+      });
+    })();
+
     (() => {
       const closedModal = document.querySelector('#rsvp-closed-modal');
       const openButtons = [...document.querySelectorAll('[data-open-rsvp-closed]')];
